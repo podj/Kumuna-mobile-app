@@ -5,20 +5,20 @@ import * as yup from "yup";
 
 import { Layout, Text, Input, Button } from "@ui-kitten/components";
 
-const formConfig = {
-  initialValues: {
-    email: "",
-    name: "",
-    password: "",
-  },
-  validationSchema: yup.object().shape({
-    email: yup.string().email().required(),
-    name: yup.string().min(4).required(),
-    password: yup.string().min(6).required(),
-  }),
-};
-
 const RegistrationScreen = ({ navigation }) => {
+  const formConfig = {
+    initialValues: {
+      email: "",
+      name: "",
+      password: "",
+    },
+    validationSchema: yup.object().shape({
+      email: yup.string().email().required(),
+      name: yup.string().min(4).required(),
+      password: yup.string().min(6).required(),
+    }),
+  };
+
   return (
     <Layout style={styles.layout}>
       <Formik
