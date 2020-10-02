@@ -33,7 +33,7 @@ const LoginScreen = ({ navigation }) => {
         }) => {
           return (
             <Layout style={styles.form}>
-              <Text style={styles.text}>LOGIN</Text>
+              <Text style={styles.text}>Login</Text>
               <Input
                 label="Email Address"
                 value={values.email}
@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 32,
+    textAlign: "center",
   },
   input: {
     marginTop: 30,

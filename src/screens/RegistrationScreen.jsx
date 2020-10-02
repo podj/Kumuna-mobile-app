@@ -35,7 +35,7 @@ const RegistrationScreen = ({ navigation }) => {
         }) => {
           return (
             <Layout style={styles.form}>
-              <Text style={styles.text}>REGISTER</Text>
+              <Text style={styles.text}>Let's get started</Text>
 
               <Input
                 label="Email Address"
@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 32,
+    textAlign: "center",
   },
   input: {
     marginTop: 30,
