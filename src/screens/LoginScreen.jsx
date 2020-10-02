@@ -12,7 +12,7 @@ const formConfig = {
   },
   validationSchema: yup.object().shape({
     email: yup.string().email().required(),
-    password: yup.string().min(6).required(),
+    password: yup.string().min(8).required(),
   }),
 };
 
@@ -22,8 +22,7 @@ const LoginScreen = ({ navigation }) => {
       <Formik
         initialValues={formConfig.initialValues}
         validationSchema={formConfig.validationSchema}
-        onSubmit={(values) => console.log("values", values)}
-      >
+        onSubmit={(values) => console.log("values", values)}>
         {({
           values,
           errors,
@@ -61,16 +60,14 @@ const LoginScreen = ({ navigation }) => {
               <Button
                 onPress={handleSubmit}
                 disabled={!isValid}
-                style={styles.button}
-              >
+                style={styles.button}>
                 Sign In
               </Button>
 
               <Button
                 appearance="ghost"
                 onPress={() => navigation.navigate("Registration")}
-                style={styles.button}
-              >
+                style={styles.button}>
                 DON'T HAVE AN ACCOUNT? CREATE ONE
               </Button>
             </Layout>
