@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import * as eva from "@eva-design/eva";
 import { ApplicationProvider } from "@ui-kitten/components";
@@ -7,8 +7,8 @@ import { default as mapping } from "./src/mapping.json";
 import * as Font from "expo-font";
 
 const App = () => {
-  useEffect(() => {
-    Font.loadAsync({ "Lato-Light": require("./assets/Lato-Light.ttf") });
+  let [fontsLoaded] = Font.useFonts({
+    "Lato-Light": require("./assets/Lato-Light.ttf"),
   });
 
   return (
