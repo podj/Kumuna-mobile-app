@@ -13,15 +13,14 @@ const App = () => {
   });
 
   if (!fontsLoaded) {
-    // TODO Create real loading page
+    // TODO: set spinner
     return <Text>Loading...</Text>;
   } else {
     return (
       <ApplicationProvider
         {...eva}
         theme={{ ...eva.dark }}
-        customMapping={mapping}
-      >
+        customMapping={mapping}>
         <AppNavigator />
       </ApplicationProvider>
     );
