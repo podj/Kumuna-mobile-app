@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { StyleSheet } from "react-native";
-import { Layout, Text, Input, Button } from "@ui-kitten/components";
+import { Layout, Text } from "@ui-kitten/components";
+import React from "react";
 
 export default function ({ navigation }) {
   return (
