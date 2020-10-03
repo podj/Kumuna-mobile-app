@@ -1,10 +1,7 @@
 import { Layout, Text } from "@ui-kitten/components";
 import React from "react";
+import ScreenLayout from "../components/ScreenLayout";
 
 export default function ({ navigation }) {
-  return (
-    <Layout style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text category="h1">Expenses</Text>
-    </Layout>
-  );
+  return <ScreenLayout title="Expenses"></ScreenLayout>;
 }

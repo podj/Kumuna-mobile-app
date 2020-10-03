@@ -1,7 +1,8 @@
-import React from "react";
-import { ImageBackground, StyleSheet } from "react-native";
-import { Layout, Text, List, Card, Button, Icon } from "@ui-kitten/components";
+import { Button, Icon, List, ListItem, Text } from "@ui-kitten/components";
 import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
+import { Alert, ImageBackground, StyleSheet } from "react-native";
+import ScreenLayout from "../components/ScreenLayout";
 
 const data = [
   {
@@ -15,22 +16,33 @@ const data = [
     name: "Minecraft Gamers",
     picture: {
       uri:
-        "https://images.pexels.com/photos/4614987/pexels-photo-4614987.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/6069/grass-lawn-green-wooden-6069.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
     },
   },
   {
     name: "Cocaine & Hoes",
     picture: {
       uri:
-        "https://images.pexels.com/photos/4614987/pexels-photo-4614987.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "https://images.pexels.com/photos/1089423/pexels-photo-1089423.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+    },
+  },
+  {
+    name: "Allenby 31",
+    picture: {
+      uri:
+        "https://images.pexels.com/photos/1089423/pexels-photo-1089423.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
     },
   },
 ];
 
+const data1 = [];
+
 const addKumunaIcon = (props) => <Icon {...props} name="plus-outline" />;
 
 const renderKumuna = ({ item }) => (
-  <Card style={styles.card}>
+  <ListItem
+    style={styles.card}
+    onPress={() => Alert.alert("Fuck you hido", item.name)}>
     <ImageBackground source={item.picture} style={styles.kumunaBackground}>
       <LinearGradient
         colors={["transparent", "rgba(0,0,0,0.7)"]}
@@ -48,38 +60,44 @@ const renderKumuna = ({ item }) => (
         {item.name}
       </Text>
     </ImageBackground>
-  </Card>
+  </ListItem>
 );
 
 export default function ({ navigation }) {
-  return (
-    <Layout style={styles.container}>
-      <Text category="h1" style={styles.title}>
-        Kumunas
+  let content = null;
+  if (!data || !data.length) {
+    content = (
+      <Text style={{ textAlign: "center" }} category="h5">
+        Nothing to show yet 🐣
       </Text>
-      <List data={data} renderItem={renderKumuna} style={styles.kumunas} />
+    );
+  } else {
+    content = (
+      <List
+        showsVerticalScrollIndicator={false}
+        data={data}
+        renderItem={renderKumuna}
+        style={styles.kumunas}
+      />
+    );
+  }
+
+  return (
+    <ScreenLayout title="Kumunas">
+      {content}
       <Button
         onPress={() => navigation.navigate("AddKumunaScreen")}
         style={styles.addKumunaButton}
         accessoryLeft={addKumunaIcon}
         status="danger"></Button>
-    </Layout>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingTop: 80,
-  },
-  title: {
-    textAlign: "center",
-  },
   card: {
-    borderWidth: 0,
     height: 200,
-    marginTop: 20,
+    marginTop: 10,
     padding: 0,
     position: "relative",
   },
