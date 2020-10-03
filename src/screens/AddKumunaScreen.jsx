@@ -5,6 +5,7 @@ import {
   Select,
   SelectItem,
   IndexPath,
+  Text,
 } from "@ui-kitten/components";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
@@ -15,7 +16,7 @@ import AsyncAlert from "../utils/AsyncAlert";
 export default function ({ navigation }) {
   const [name, setName] = useState(null);
   const [imageUri, setImageUri] = useState(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(0));
+  const [selectedIndex, setSelectedIndex] = useState(new IndexPath(0));
 
   const pickImage = async () => {
     const cameraRollPermissions = await ImagePicker.getCameraRollPermissionsAsync();
@@ -60,16 +61,19 @@ export default function ({ navigation }) {
           label="Kumuna type"
           selectedIndex={selectedIndex}
           onSelect={(index) => setSelectedIndex(index)}>
-          <SelectItem title="Friends" />
+          <SelectItem title="Friends" value="Friends" />
           <SelectItem title="Shared Household" />
           <SelectItem title="A real Kumuna" />
         </Select>
-        <Button
-          style={{ alignSelf: "flex-start" }}
-          onPress={pickImage}
-          status="basic">
-          Choose image
-        </Button>
+        <Layout style={styles.chooseImageContainer}>
+          <Button
+            style={{ alignSelf: "flex-start" }}
+            onPress={pickImage}
+            status="basic">
+            Choose image
+          </Button>
+          <Text status="success">Image was chosen</Text>
+        </Layout>
         <Button size="giant">Create</Button>
       </Layout>
       <Button
@@ -92,5 +96,12 @@ const styles = StyleSheet.create({
     flexBasis: "auto",
     height: 280,
     alignItems: "center",
+  },
+  chooseImageContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignContent: "center",
+    width: "100%",
+    justifyContent: "space-evenly",
   },
 });

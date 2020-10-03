@@ -7,6 +7,7 @@ import * as yup from "yup";
 import { Layout, Text, Input, Button, Spinner } from "@ui-kitten/components";
 
 import { AuthContext } from "../contexts/AuthProvider";
+import ScreenLayout from "../components/ScreenLayout";
 
 const RegistrationScreen = ({ navigation }) => {
   const { register, loading, authError } = useContext(AuthContext);
@@ -19,20 +20,19 @@ const RegistrationScreen = ({ navigation }) => {
     },
     validationSchema: yup.object().shape({
       email: yup.string().email().required(),
-      name: yup.string().min(4).required(),
+      name: yup.string().min(2).required(),
       password: yup.string().min(6).required(),
     }),
   };
 
   return (
-    <Layout style={styles.layout}>
+    <ScreenLayout title="Let's get started">
       <Formik
         initialValues={formConfig.initialValues}
         validationSchema={formConfig.validationSchema}
         onSubmit={(values) =>
           register(values.email, values.name, values.password)
-        }
-      >
+        }>
         {({
           values,
           errors,
@@ -43,8 +43,6 @@ const RegistrationScreen = ({ navigation }) => {
         }) => {
           return (
             <Layout style={styles.form}>
-              <Text style={styles.text}>Let's get started</Text>
-
               {authError ? (
                 <Text status="danger" style={styles.error}>
                   {authError}
@@ -87,37 +85,32 @@ const RegistrationScreen = ({ navigation }) => {
               <Button
                 onPress={handleSubmit}
                 disabled={!isValid}
-                style={styles.button}
+                style={styles.submitButton}
                 accessoryLeft={
                   loading ? () => <Spinner status="basic" size="tiny" /> : null
-                }
-              >
+                }>
                 Register
               </Button>
 
               <Button
                 appearance="ghost"
-                onPress={() => navigation.navigate("Login")}
-                style={styles.button}
-              >
-                ALREADY HAVE AN ACCOUNT? LOGIN
+                status="basic"
+                onPress={() => navigation.navigate("Login")}>
+                or login
               </Button>
             </Layout>
           );
         }}
       </Formik>
-    </Layout>
+    </ScreenLayout>
   );
 };
 
 const styles = StyleSheet.create({
-  layout: {
-    height: "100%",
-    paddingHorizontal: 50,
-    paddingVertical: 100,
-  },
   form: {
-    width: "100%",
+    flex: 1,
+    paddingTop: 30,
+    width: "80%",
   },
   text: {
     fontSize: 32,
@@ -130,8 +123,10 @@ const styles = StyleSheet.create({
     marginTop: 30,
     width: "100%",
   },
-  button: {
+  submitButton: {
     marginTop: 30,
+    width: "50%",
+    alignSelf: "center",
   },
 });
 
