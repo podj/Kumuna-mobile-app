@@ -75,6 +75,7 @@ const LoginScreen = ({ navigation }) => {
               <Button
                 appearance="ghost"
                 status="basic"
+                disabled={loading}
                 onPress={() => navigation.navigate("Registration")}>
                 or register
               </Button>
