@@ -99,6 +99,7 @@ const RegistrationScreen = ({ navigation }) => {
                 appearance="ghost"
                 onPress={() => navigation.navigate("Login")}
                 style={styles.button}
+                disabled={loading}
               >
                 ALREADY HAVE AN ACCOUNT? LOGIN
               </Button>

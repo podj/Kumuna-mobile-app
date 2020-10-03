@@ -84,6 +84,7 @@ const LoginScreen = ({ navigation }) => {
                 appearance="ghost"
                 onPress={() => navigation.navigate("Registration")}
                 style={styles.button}
+                disabled={loading}
               >
                 DON'T HAVE AN ACCOUNT? CREATE ONE
               </Button>
