@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 32,
+    textAlign: "center",
   },
   error: {
     marginTop: 30,

@@ -45,7 +45,7 @@ const RegistrationScreen = ({ navigation }) => {
         }) => {
           return (
             <Layout style={styles.form}>
-              <Text style={styles.text}>REGISTER</Text>
+              <Text style={styles.text}>Let's get started</Text>
 
               {authError ? (
                 <Text status="danger" style={styles.error}>
@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 32,
+    textAlign: "center",
   },
   error: {
     marginTop: 30,

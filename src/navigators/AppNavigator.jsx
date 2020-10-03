@@ -1,11 +1,12 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import AuthStackNavigator from "./AuthStackNavigator";
+import BottomNavigator from "./BottomNavigator";
+
 import useAuth from "../hooks/useAuth";
-import HomeStackNavigator from "./HomeStack";
 
 const AppStack = createStackNavigator();
 
@@ -20,7 +21,7 @@ const AppNavigator = () => {
         }}
       >
         {user ? (
-          <AppStack.Screen name="HomeStack" component={HomeStackNavigator} />
+          <AppStack.Screen name="BottomStack" component={BottomNavigator} />
         ) : (
           <AppStack.Screen name="AuthStack" component={AuthStackNavigator} />
         )}
