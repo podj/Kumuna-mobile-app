@@ -3,11 +3,9 @@ import { StyleSheet } from "react-native";
 
 import { Formik } from "formik";
 import * as yup from "yup";
-import { Layout, Text, Input, Button } from "@ui-kitten/components";
+import { Layout, Text, Input, Button, Spinner } from "@ui-kitten/components";
 
 import { AuthContext } from "../contexts/AuthProvider";
-
-import TinyLoadingSpinner from "../components/TinyLoadingSpinner";
 
 const LoginScreen = ({ navigation }) => {
   const { login, loading, authError } = useContext(AuthContext);
@@ -75,7 +73,9 @@ const LoginScreen = ({ navigation }) => {
                 onPress={handleSubmit}
                 disabled={!isValid}
                 style={styles.button}
-                accessoryLeft={loading ? TinyLoadingSpinner : null}
+                accessoryLeft={
+                  loading ? () => <Spinner status="basic" size="tiny" /> : null
+                }
               >
                 Sign In
               </Button>

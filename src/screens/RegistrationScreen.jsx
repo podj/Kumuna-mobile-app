@@ -4,11 +4,9 @@ import { StyleSheet } from "react-native";
 import { Formik } from "formik";
 import * as yup from "yup";
 
-import { Layout, Text, Input, Button } from "@ui-kitten/components";
+import { Layout, Text, Input, Button, Spinner } from "@ui-kitten/components";
 
 import { AuthContext } from "../contexts/AuthProvider";
-
-import TinyLoadingSpinner from "../components/TinyLoadingSpinner";
 
 const RegistrationScreen = ({ navigation }) => {
   const { register, loading, authError } = useContext(AuthContext);
@@ -90,7 +88,9 @@ const RegistrationScreen = ({ navigation }) => {
                 onPress={handleSubmit}
                 disabled={!isValid}
                 style={styles.button}
-                accessoryLeft={loading ? TinyLoadingSpinner : null}
+                accessoryLeft={
+                  loading ? () => <Spinner status="basic" size="tiny" /> : null
+                }
               >
                 Register
               </Button>
