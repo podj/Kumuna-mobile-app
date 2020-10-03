@@ -10,7 +10,9 @@ const firebaseConfig = {
   appId: "1:1022513402751:web:165730d8b61dea740c004a",
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 export const login = (email, password) => {
   return firebase.auth().signInWithEmailAndPassword(email, password);
