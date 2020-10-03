@@ -3,12 +3,15 @@ import { Text } from "react-native";
 
 import * as eva from "@eva-design/eva";
 import { ApplicationProvider } from "@ui-kitten/components";
-import AppNavigator from "./src/navigators/AppNavigator";
-import { default as mapping } from "./src/mapping.json";
+
 import * as Font from "expo-font";
 
+import { AuthProvider } from "./src/contexts/AuthProvider";
+import AppNavigator from "./src/navigators/AppNavigator";
+import { default as mapping } from "./src/mapping.json";
+
 const App = () => {
-  let [fontsLoaded] = Font.useFonts({
+  const [fontsLoaded] = Font.useFonts({
     "Lato-Light": require("./assets/Lato-Light.ttf"),
   });
 
@@ -20,8 +23,11 @@ const App = () => {
       <ApplicationProvider
         {...eva}
         theme={{ ...eva.dark }}
-        customMapping={mapping}>
-        <AppNavigator />
+        customMapping={mapping}
+      >
+        <AuthProvider>
+          <AppNavigator />
+        </AuthProvider>
       </ApplicationProvider>
     );
   }

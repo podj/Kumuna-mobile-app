@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { StyleSheet } from "react-native";
-import { Formik, ErrorMessage } from "formik";
+
+import { Formik } from "formik";
 import * as yup from "yup";
 
 import { Layout, Text, Input, Button } from "@ui-kitten/components";
 
+import { AuthContext } from "../contexts/AuthProvider";
+
+import TinyLoadingSpinner from "../components/TinyLoadingSpinner";
+
 const RegistrationScreen = ({ navigation }) => {
+  const { register, loading, authError } = useContext(AuthContext);
+
   const formConfig = {
     initialValues: {
       email: "",
@@ -24,7 +31,9 @@ const RegistrationScreen = ({ navigation }) => {
       <Formik
         initialValues={formConfig.initialValues}
         validationSchema={formConfig.validationSchema}
-        onSubmit={(values) => console.log("values", values)}
+        onSubmit={(values) =>
+          register(values.email, values.name, values.password)
+        }
       >
         {({
           values,
@@ -37,6 +46,12 @@ const RegistrationScreen = ({ navigation }) => {
           return (
             <Layout style={styles.form}>
               <Text style={styles.text}>REGISTER</Text>
+
+              {authError ? (
+                <Text status="danger" style={styles.error}>
+                  {authError}
+                </Text>
+              ) : null}
 
               <Input
                 label="Email Address"
@@ -75,6 +90,7 @@ const RegistrationScreen = ({ navigation }) => {
                 onPress={handleSubmit}
                 disabled={!isValid}
                 style={styles.button}
+                accessoryLeft={loading ? TinyLoadingSpinner : null}
               >
                 Register
               </Button>
@@ -105,6 +121,9 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 32,
+  },
+  error: {
+    marginTop: 30,
   },
   input: {
     marginTop: 30,
