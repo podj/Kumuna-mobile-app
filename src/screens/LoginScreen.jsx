@@ -25,7 +25,8 @@ const LoginScreen = ({ navigation }) => {
       <Formik
         initialValues={formConfig.initialValues}
         validationSchema={formConfig.validationSchema}
-        onSubmit={(values) => login(values.email, values.password)}>
+        onSubmit={(values) => login(values.email, values.password)}
+      >
         {({
           values,
           errors,
@@ -47,8 +48,8 @@ const LoginScreen = ({ navigation }) => {
                 value={values.email}
                 onChangeText={handleChange("email")}
                 onBlur={handleBlur("email")}
-                status={values.email && errors.email ? "danger" : "basic"}
-                caption={values.email && errors.email ? errors.email : ""}
+                status={!isValid && errors.email ? "danger" : "basic"}
+                caption={!isValid && errors.email ? errors.email : ""}
                 style={styles.input}
               />
 
@@ -58,17 +59,16 @@ const LoginScreen = ({ navigation }) => {
                 onChangeText={handleChange("password")}
                 onBlur={handleBlur("password")}
                 secureTextEntry={true}
-                status={values.password && errors.password ? "danger" : "basic"}
-                caption={
-                  values.password && errors.password ? errors.password : ""
-                }
+                status={!isValid && errors.password ? "danger" : "basic"}
+                caption={!isValid && errors.password ? errors.password : ""}
                 style={styles.input}
               />
 
               <Button
                 onPress={handleSubmit}
                 disabled={!isValid}
-                style={styles.submitButton}>
+                style={styles.submitButton}
+              >
                 {loading ? <Spinner status="basic" size="tiny" /> : "Sign In"}
               </Button>
 
@@ -76,7 +76,8 @@ const LoginScreen = ({ navigation }) => {
                 appearance="ghost"
                 status="basic"
                 disabled={loading}
-                onPress={() => navigation.navigate("Registration")}>
+                onPress={() => navigation.navigate("Registration")}
+              >
                 or register
               </Button>
             </Layout>

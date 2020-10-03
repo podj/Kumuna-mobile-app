@@ -32,7 +32,8 @@ const RegistrationScreen = ({ navigation }) => {
         validationSchema={formConfig.validationSchema}
         onSubmit={(values) =>
           register(values.email, values.name, values.password)
-        }>
+        }
+      >
         {({
           values,
           errors,
@@ -54,8 +55,8 @@ const RegistrationScreen = ({ navigation }) => {
                 value={values.email}
                 onChangeText={handleChange("email")}
                 onBlur={handleBlur("email")}
-                status={values.email && errors.email ? "danger" : "basic"}
-                caption={values.email && errors.email ? errors.email : ""}
+                status={!isValid && errors.email ? "danger" : "basic"}
+                caption={!isValid && errors.email ? errors.email : ""}
                 style={styles.input}
               />
 
@@ -64,8 +65,8 @@ const RegistrationScreen = ({ navigation }) => {
                 value={values.name}
                 onChangeText={handleChange("name")}
                 onBlur={handleBlur("name")}
-                status={values.name && errors.name ? "danger" : "basic"}
-                caption={values.name && errors.name ? errors.name : ""}
+                status={!isValid && errors.name ? "danger" : "basic"}
+                caption={!isValid && errors.name ? errors.name : ""}
                 style={styles.input}
               />
 
@@ -75,10 +76,8 @@ const RegistrationScreen = ({ navigation }) => {
                 onChangeText={handleChange("password")}
                 onBlur={handleBlur("password")}
                 secureTextEntry={true}
-                status={values.password && errors.password ? "danger" : "basic"}
-                caption={
-                  values.password && errors.password ? errors.password : ""
-                }
+                status={!isValid && errors.password ? "danger" : "basic"}
+                caption={!isValid && errors.password ? errors.password : ""}
                 style={styles.input}
               />
 
@@ -88,7 +87,8 @@ const RegistrationScreen = ({ navigation }) => {
                 style={styles.submitButton}
                 accessoryLeft={
                   loading ? () => <Spinner status="basic" size="tiny" /> : null
-                }>
+                }
+              >
                 Register
               </Button>
 
@@ -96,7 +96,8 @@ const RegistrationScreen = ({ navigation }) => {
                 appearance="ghost"
                 status="basic"
                 disabled={loading}
-                onPress={() => navigation.navigate("Login")}>
+                onPress={() => navigation.navigate("Login")}
+              >
                 or login
               </Button>
             </Layout>
