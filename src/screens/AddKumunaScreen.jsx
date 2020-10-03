@@ -1,12 +1,4 @@
-import {
-  Button,
-  Input,
-  Layout,
-  Select,
-  SelectItem,
-  IndexPath,
-  Text,
-} from "@ui-kitten/components";
+import { Button, IndexPath, Input, Layout, Text } from "@ui-kitten/components";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import { Alert, StyleSheet } from "react-native";
@@ -56,32 +48,22 @@ export default function ({ navigation }) {
     <ScreenLayout title="Create Kumuna">
       <Layout style={styles.container}>
         <Input label="Name" value={name} onChangeText={setName} />
-        <Select
-          style={{ width: "100%" }}
-          label="Kumuna type"
-          selectedIndex={selectedIndex}
-          onSelect={(index) => setSelectedIndex(index)}>
-          <SelectItem title="Friends" value="Friends" />
-          <SelectItem title="Shared Household" />
-          <SelectItem title="A real Kumuna" />
-        </Select>
         <Layout style={styles.chooseImageContainer}>
           <Button
             style={{ alignSelf: "flex-start" }}
             onPress={pickImage}
             status="basic">
-            Choose image
+            {Boolean(imageUri) ? "Change image" : "Choose image"}
           </Button>
-          <Text status="success">Image was chosen</Text>
         </Layout>
-        <Button size="giant">Create</Button>
+        <Button style={styles.submitButton}>Create</Button>
+        <Button
+          style={styles.cancelButton}
+          onPress={() => navigation.navigate("KumunaListScreen")}
+          appearance="ghost">
+          cancel
+        </Button>
       </Layout>
-      <Button
-        style={styles.cancelButton}
-        onPress={() => navigation.navigate("KumunaListScreen")}
-        appearance="ghost">
-        cancel
-      </Button>
     </ScreenLayout>
   );
 }
@@ -92,12 +74,14 @@ const styles = StyleSheet.create({
   },
   container: {
     width: "85%",
-    justifyContent: "space-between",
-    flexBasis: "auto",
     height: 280,
     alignItems: "center",
   },
+  submitButton: {
+    marginTop: 20,
+  },
   chooseImageContainer: {
+    marginTop: 20,
     flexDirection: "row",
     alignItems: "center",
     alignContent: "center",
