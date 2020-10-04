@@ -18,3 +18,17 @@ export const createUser = async (user) => {
 
   return response.data;
 };
+
+export const createKumuna = async (kumuna) => {
+  const response = await axios.post("/kumunas", {
+    name: kumuna.name,
+    thumbnailUrl: kumuna.thumbnailUrl,
+  });
+
+  if (response.status !== 201) {
+    console.error("createKumuna failed", response);
+    throw new Error("Failed to create Kumuna");
+  }
+
+  return response.data;
+};

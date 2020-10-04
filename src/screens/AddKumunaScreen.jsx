@@ -1,14 +1,19 @@
-import { Button, IndexPath, Input, Layout, Text } from "@ui-kitten/components";
+import { Button, Input, Layout } from "@ui-kitten/components";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import { Alert, StyleSheet } from "react-native";
 import ScreenLayout from "../components/ScreenLayout";
 import AsyncAlert from "../utils/AsyncAlert";
+import { createKumuna } from "../services/backendService";
 
 export default function ({ navigation }) {
   const [name, setName] = useState(null);
   const [imageUri, setImageUri] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(new IndexPath(0));
+
+  const handleSubmit = async () => {
+    const response = await createKumuna({ name, thumbnailUri: imageUri });
+    Alert.alert(response.name, `You Kumuna's id is ${response.id}`);
+  };
 
   const pickImage = async () => {
     const cameraRollPermissions = await ImagePicker.getCameraRollPermissionsAsync();
@@ -45,18 +50,18 @@ export default function ({ navigation }) {
   };
 
   return (
-    <ScreenLayout title="Create Kumuna">
+    <ScreenLayout title="New Kumuna">
       <Layout style={styles.container}>
         <Input label="Name" value={name} onChangeText={setName} />
-        <Layout style={styles.chooseImageContainer}>
-          <Button
-            style={{ alignSelf: "flex-start" }}
-            onPress={pickImage}
-            status="basic">
-            {Boolean(imageUri) ? "Change image" : "Choose image"}
-          </Button>
-        </Layout>
-        <Button style={styles.submitButton}>Create</Button>
+        <Button
+          style={{ alignSelf: "flex-start", marginTop: 20 }}
+          onPress={pickImage}
+          status="basic">
+          {Boolean(imageUri) ? "Change image" : "Choose image"}
+        </Button>
+        <Button style={styles.submitButton} onPress={handleSubmit}>
+          Create Kumuna
+        </Button>
         <Button
           style={styles.cancelButton}
           onPress={() => navigation.navigate("KumunaListScreen")}
@@ -70,7 +75,7 @@ export default function ({ navigation }) {
 
 const styles = StyleSheet.create({
   cancelButton: {
-    marginTop: 10,
+    marginTop: 0,
   },
   container: {
     width: "85%",
@@ -79,13 +84,5 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 20,
-  },
-  chooseImageContainer: {
-    marginTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    alignContent: "center",
-    width: "100%",
-    justifyContent: "space-evenly",
   },
 });
