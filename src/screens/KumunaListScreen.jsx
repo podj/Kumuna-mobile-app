@@ -4,7 +4,7 @@ import React from "react";
 import { Alert, ImageBackground, StyleSheet } from "react-native";
 import ScreenLayout from "../components/ScreenLayout";
 
-const data = [
+const data1 = [
   {
     name: "LAN Party",
     picture: {
@@ -35,14 +35,15 @@ const data = [
   },
 ];
 
-const data1 = [];
+const data = [];
 
 const addKumunaIcon = (props) => <Icon {...props} name="plus-outline" />;
 
 const renderKumuna = ({ item }) => (
   <ListItem
     style={styles.card}
-    onPress={() => Alert.alert("Fuck you hido", item.name)}>
+    onPress={() => Alert.alert("Fuck you hido", item.name)}
+  >
     <ImageBackground source={item.picture} style={styles.kumunaBackground}>
       <LinearGradient
         colors={["transparent", "rgba(0,0,0,0.7)"]}
@@ -56,7 +57,8 @@ const renderKumuna = ({ item }) => (
         }}
       />
       <Text
-        style={{ position: "absolute", bottom: 10, left: 10, fontSize: 24 }}>
+        style={{ position: "absolute", bottom: 10, left: 10, fontSize: 24 }}
+      >
         {item.name}
       </Text>
     </ImageBackground>
@@ -89,7 +91,8 @@ export default function ({ navigation }) {
         onPress={() => navigation.navigate("AddKumunaScreen")}
         style={styles.addKumunaButton}
         accessoryLeft={addKumunaIcon}
-        status="danger"></Button>
+        status="danger"
+      ></Button>
     </ScreenLayout>
   );
 }

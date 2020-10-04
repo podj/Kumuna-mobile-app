@@ -1,17 +1,159 @@
-import React, { useContext } from "react";
-
-import { Button } from "@ui-kitten/components";
+import React from "react";
 
 import ScreenLayout from "../components/ScreenLayout";
-
-import { AuthContext } from "../contexts/AuthProvider";
+import ExpenseItem from "../components/ExpenseItem";
+import ExpensesSectionHeader from "../components/ExpenseMonthDivider";
+import { ScrollView } from "react-native-gesture-handler";
+import { SectionList } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ({ navigation }) {
-  const { logout } = useContext(AuthContext);
-
   return (
     <ScreenLayout title="Expenses">
-      <Button onPress={logout}>LOGOUT</Button>
+      <SafeAreaView>
+        <SectionList
+          sections={listData}
+          keyExtractor={(item, index) => item + index}
+          renderItem={({ item }) => <ExpenseItem {...item} />}
+          renderSectionHeader={() => <ExpensesSectionHeader />}
+        />
+      </SafeAreaView>
     </ScreenLayout>
   );
 }
+
+const listData = [
+  {
+    title: "Header 1",
+    data: [
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+    ],
+  },
+  {
+    title: "Header 2",
+    data: [
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+    ],
+  },
+  {
+    title: "Header 3",
+    data: [
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+    ],
+  },
+  {
+    title: "Header 3",
+    data: [
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+    ],
+  },
+  {
+    title: "Header 3",
+    data: [
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+    ],
+  },
+  {
+    title: "Header 3",
+    data: [
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+    ],
+  },
+  {
+    title: "Header 3",
+    data: [
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+      {
+        title: "Title",
+        description: "Description",
+        price: "5,000$",
+        date: { day: 17, month: "Sep." },
+        isDebt: true,
+      },
+    ],
+  },
+];
