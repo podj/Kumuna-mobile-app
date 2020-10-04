@@ -2,8 +2,7 @@ import React from "react";
 
 import ScreenLayout from "../components/ScreenLayout";
 import ExpenseItem from "../components/ExpenseItem";
-import ExpensesSectionHeader from "../components/ExpenseMonthDivider";
-import { ScrollView } from "react-native-gesture-handler";
+import ExpensesSectionHeader from "../components/ExpensesSectionHeader";
 import { SectionList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
