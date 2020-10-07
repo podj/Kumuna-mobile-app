@@ -1,7 +1,11 @@
-import { Button, Icon, List, ListItem, Text } from "@ui-kitten/components";
-import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { Alert, ImageBackground, StyleSheet } from "react-native";
+
+import { LinearGradient } from "expo-linear-gradient";
+
+import { List, ListItem, Text } from "@ui-kitten/components";
+
+import FloatButton from "../components/FloatButton";
 import ScreenLayout from "../components/ScreenLayout";
 
 const data1 = [
@@ -37,12 +41,10 @@ const data1 = [
 
 const data = [];
 
-const addKumunaIcon = (props) => <Icon {...props} name="plus-outline" />;
-
 const renderKumuna = ({ item }) => (
   <ListItem
     style={styles.card}
-    onPress={() => Alert.alert("Fuck you hido", item.name)}
+    onPress={() => Alert.alert("Fuck you itamar", item.name)}
   >
     <ImageBackground source={item.picture} style={styles.kumunaBackground}>
       <LinearGradient
@@ -87,12 +89,9 @@ export default function ({ navigation }) {
   return (
     <ScreenLayout title="Kumunas">
       {content}
-      <Button
+      <FloatButton
         onPress={() => navigation.navigate("AddKumunaScreen")}
-        style={styles.addKumunaButton}
-        accessoryLeft={addKumunaIcon}
-        status="danger"
-      ></Button>
+      ></FloatButton>
     </ScreenLayout>
   );
 }
@@ -107,16 +106,6 @@ const styles = StyleSheet.create({
   kumunas: {
     backgroundColor: "transparent",
     marginTop: 10,
-  },
-  addKumunaButton: {
-    position: "absolute",
-    borderRadius: 50,
-    bottom: 15,
-    right: 15,
-    padding: 0,
-    fontSize: 50,
-    height: 60,
-    width: 60,
   },
   kumunaBackground: {
     resizeMode: "cover",

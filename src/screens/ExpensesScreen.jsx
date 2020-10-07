@@ -1,25 +1,31 @@
 import React from "react";
 
+import { StyleSheet, SectionList } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import ScreenLayout from "../components/ScreenLayout";
 import ExpenseItem from "../components/ExpenseItem";
 import ExpensesSectionHeader from "../components/ExpensesSectionHeader";
-import { SectionList } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import FloatButton from "../components/FloatButton";
 
-export default function ({ navigation }) {
+const ExpensesScreen = ({ navigation }) => {
   return (
     <ScreenLayout title="Expenses">
       <SafeAreaView>
         <SectionList
+          style={styles.list}
           sections={listData}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item }) => <ExpenseItem {...item} />}
           renderSectionHeader={() => <ExpensesSectionHeader />}
         />
       </SafeAreaView>
+      <FloatButton />
     </ScreenLayout>
   );
-}
+};
+
+export default ExpensesScreen;
 
 const listData = [
   {
@@ -156,3 +162,9 @@ const listData = [
     ],
   },
 ];
+
+const styles = StyleSheet.create({
+  list: {
+    borderRadius: 5,
+  },
+});

@@ -1,14 +1,18 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import ExpensesScreen from "../screens/ExpensesScreen";
-import KumunasScreen from "../screens/KumunasScreen";
-import SharedScheduleScreen from "../screens/SharedScheduleScreen";
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   BottomNavigation,
   BottomNavigationTab,
   Icon,
 } from "@ui-kitten/components";
+
+import KumunasScreen from "../screens/KumunasScreen";
+import SharedScheduleScreen from "../screens/SharedScheduleScreen";
+
+import ExpensesStackNavigator from "./ExpensesStackNavigator";
+import KumunasNavigator from "./KumunasNavigator";
 
 const KumunasIcon = (props) => <Icon {...props} name="home-outline" />;
 const ExpensesIcon = (props) => <Icon {...props} name="credit-card-outline" />;
@@ -22,7 +26,8 @@ const BottomTabBar = ({ navigation, state }) => (
   <BottomNavigation
     style={styles.bottomNavigation}
     selectedIndex={state.index}
-    onSelect={(index) => navigation.navigate(state.routeNames[index])}>
+    onSelect={(index) => navigation.navigate(state.routeNames[index])}
+  >
     <BottomNavigationTab
       style={styles.bottomNavigationTab}
       title="Kumunas"
@@ -43,8 +48,8 @@ const BottomTabBar = ({ navigation, state }) => (
 
 export default () => (
   <Navigator tabBar={(props) => <BottomTabBar {...props} />}>
-    <Screen name="Kumunas" component={KumunasScreen} />
-    <Screen name="Expenses" component={ExpensesScreen} />
+    <Screen name="Kumunas" component={KumunasNavigator} />
+    <Screen name="Expenses" component={ExpensesStackNavigator} />
     <Screen name="Shared Schedule" component={SharedScheduleScreen} />
   </Navigator>
 );
