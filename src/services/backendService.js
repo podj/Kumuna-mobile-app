@@ -1,6 +1,6 @@
 import * as axios from "axios";
 
-axios.defaults.baseURL = "http://10.0.0.16:8080";
+axios.defaults.baseURL = "http://192.168.1.167:8080";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 
@@ -35,4 +35,14 @@ export const createKumuna = async (kumuna) => {
 
 export const getKumunaExpenses = async (kumunaId) => {
   const response = await axios.get(`/kumunas/${kumunaId}/debts`);
+};
+
+export const getKumunas = async () => {
+  const response = await axios.get("/kumunas");
+  if (response.status !== 200) {
+    console.error("getKumunas failed", response);
+    throw new Error("Failed to fetch kumunas");
+  }
+
+  return response.data;
 };

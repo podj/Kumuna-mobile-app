@@ -25,8 +25,7 @@ const LoginScreen = ({ navigation }) => {
       <Formik
         initialValues={formConfig.initialValues}
         validationSchema={formConfig.validationSchema}
-        onSubmit={(values) => login(values.email, values.password)}
-      >
+        onSubmit={(values) => login(values.email, values.password)}>
         {({
           values,
           errors,
@@ -67,8 +66,7 @@ const LoginScreen = ({ navigation }) => {
               <Button
                 onPress={handleSubmit}
                 disabled={!isValid}
-                style={styles.submitButton}
-              >
+                style={styles.submitButton}>
                 {loading ? <Spinner status="basic" size="tiny" /> : "Sign In"}
               </Button>
 
@@ -76,8 +74,7 @@ const LoginScreen = ({ navigation }) => {
                 appearance="ghost"
                 status="basic"
                 disabled={loading}
-                onPress={() => navigation.navigate("Registration")}
-              >
+                onPress={() => navigation.navigate("Registration")}>
                 or register
               </Button>
             </Layout>

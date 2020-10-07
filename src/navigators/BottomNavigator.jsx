@@ -2,17 +2,17 @@ import React from "react";
 import { StyleSheet } from "react-native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import KumunasNavigator from "../navigators/KumunasNavigator";
 import {
   BottomNavigation,
   BottomNavigationTab,
   Icon,
 } from "@ui-kitten/components";
 
-import KumunasScreen from "../screens/KumunasScreen";
-import SharedScheduleScreen from "../screens/SharedScheduleScreen";
-
 import ExpensesStackNavigator from "./ExpensesStackNavigator";
 import KumunasNavigator from "./KumunasNavigator";
+
+import SharedScheduleScreen from "../screens/SharedScheduleScreen";
 
 const KumunasIcon = (props) => <Icon {...props} name="home-outline" />;
 const ExpensesIcon = (props) => <Icon {...props} name="credit-card-outline" />;
