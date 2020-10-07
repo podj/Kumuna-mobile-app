@@ -1,6 +1,6 @@
 import * as axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:8080";
+axios.defaults.baseURL = "http://192.168.1.167:8080";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 
@@ -28,6 +28,16 @@ export const createKumuna = async (kumuna) => {
   if (response.status !== 201) {
     console.error("createKumuna failed", response);
     throw new Error("Failed to create Kumuna");
+  }
+
+  return response.data;
+};
+
+export const getKumunas = async () => {
+  const response = await axios.get("/kumunas");
+  if (response.status !== 200) {
+    console.error("getKumunas failed", response);
+    throw new Error("Failed to fetch kumunas");
   }
 
   return response.data;

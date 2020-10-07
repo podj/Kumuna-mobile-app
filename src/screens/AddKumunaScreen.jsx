@@ -1,18 +1,35 @@
-import { Button, Input, Layout } from "@ui-kitten/components";
+import { Button, Input, Layout, Spinner } from "@ui-kitten/components";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import { Alert, StyleSheet } from "react-native";
 import ScreenLayout from "../components/ScreenLayout";
 import AsyncAlert from "../utils/AsyncAlert";
-import { createKumuna } from "../services/backendService";
+import * as backendService from "../services/backendService";
+import * as yup from "yup";
 
 export default function ({ navigation }) {
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState(null);
+  const [nameErrors, setNameError] = useState(null);
   const [imageUri, setImageUri] = useState(null);
 
-  const handleSubmit = async () => {
-    const response = await createKumuna({ name, thumbnailUri: imageUri });
-    Alert.alert(response.name, `You Kumuna's id is ${response.id}`);
+  const submitKumunaCreationForm = async () => {
+    setNameError(null);
+    try {
+      yup.string().required().min(2).validateSync(name);
+    } catch (e) {
+      setNameError(e.errors[0]);
+      return;
+    }
+
+    setLoading(true);
+    await backendService.createKumuna({
+      name: name,
+      imageUrl: imageUri,
+    });
+    setLoading(false);
+    await AsyncAlert("Success", `You have created ${name} Kumuna!`);
+    navigation.navigate("KumunaListScreen");
   };
 
   const pickImage = async () => {
@@ -52,23 +69,29 @@ export default function ({ navigation }) {
   return (
     <ScreenLayout title="New Kumuna">
       <Layout style={styles.container}>
-        <Input label="Name" value={name} onChangeText={setName} />
+        <Input
+          label="Name"
+          value={name}
+          status={nameErrors ? "danger" : "basic"}
+          caption={nameErrors}
+          onChangeText={setName}
+        />
         <Button
           style={{ alignSelf: "flex-start", marginTop: 20 }}
           onPress={pickImage}
           status="basic">
           {Boolean(imageUri) ? "Change image" : "Choose image"}
         </Button>
-        <Button style={styles.submitButton} onPress={handleSubmit}>
-          Create Kumuna
-        </Button>
-        <Button
-          style={styles.cancelButton}
-          onPress={() => navigation.navigate("KumunaListScreen")}
-          appearance="ghost">
-          cancel
+        <Button style={styles.submitButton} onPress={submitKumunaCreationForm}>
+          {loading ? <Spinner status="basic" size="small" /> : "Create Kumuna"}
         </Button>
       </Layout>
+      <Button
+        style={styles.cancelButton}
+        onPress={() => navigation.navigate("KumunaListScreen")}
+        appearance="ghost">
+        cancel
+      </Button>
     </ScreenLayout>
   );
 }
@@ -84,5 +107,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 20,
+    width: "50%",
+    height: 50,
   },
 });

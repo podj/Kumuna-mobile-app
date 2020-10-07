@@ -1,9 +1,9 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import ExpensesScreen from "../screens/ExpensesScreen";
-import KumunasScreen from "../screens/KumunasScreen";
 import SharedScheduleScreen from "../screens/SharedScheduleScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import KumunasNavigator from "../navigators/KumunasNavigator";
 import {
   BottomNavigation,
   BottomNavigationTab,
@@ -43,7 +43,7 @@ const BottomTabBar = ({ navigation, state }) => (
 
 export default () => (
   <Navigator tabBar={(props) => <BottomTabBar {...props} />}>
-    <Screen name="Kumunas" component={KumunasScreen} />
+    <Screen name="Kumunas" component={KumunasNavigator} />
     <Screen name="Expenses" component={ExpensesScreen} />
     <Screen name="Shared Schedule" component={SharedScheduleScreen} />
   </Navigator>

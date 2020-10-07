@@ -5,7 +5,7 @@ import { Layout, Text } from "@ui-kitten/components";
 export default function (props) {
   return (
     <Layout style={styles.screenContainer}>
-      <Text category="h1" style={{ textAlign: "center" }}>
+      <Text category="h1" style={{ textAlign: "left" }}>
         {props.title}
       </Text>
       <Layout style={styles.contentContainer}>{props.children}</Layout>
@@ -18,11 +18,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingTop: 80,
+    paddingHorizontal: 20,
   },
   contentContainer: {
     flex: 1,
     justifyContent: "center",
-    paddingHorizontal: 20,
     alignItems: "center",
   },
 });

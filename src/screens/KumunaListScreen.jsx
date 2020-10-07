@@ -1,50 +1,19 @@
 import { Button, Icon, List, ListItem, Text } from "@ui-kitten/components";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, ImageBackground, StyleSheet } from "react-native";
 import ScreenLayout from "../components/ScreenLayout";
-
-const data1 = [
-  {
-    name: "LAN Party",
-    picture: {
-      uri:
-        "https://images.pexels.com/photos/4614987/pexels-photo-4614987.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-    },
-  },
-  {
-    name: "Minecraft Gamers",
-    picture: {
-      uri:
-        "https://images.pexels.com/photos/6069/grass-lawn-green-wooden-6069.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-    },
-  },
-  {
-    name: "Cocaine & Hoes",
-    picture: {
-      uri:
-        "https://images.pexels.com/photos/1089423/pexels-photo-1089423.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-    },
-  },
-  {
-    name: "Allenby 31",
-    picture: {
-      uri:
-        "https://images.pexels.com/photos/1089423/pexels-photo-1089423.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-    },
-  },
-];
-
-const data = [];
+import * as backendService from "../services/backendService";
 
 const addKumunaIcon = (props) => <Icon {...props} name="plus-outline" />;
 
 const renderKumuna = ({ item }) => (
   <ListItem
     style={styles.card}
-    onPress={() => Alert.alert("Fuck you hido", item.name)}
-  >
-    <ImageBackground source={item.picture} style={styles.kumunaBackground}>
+    onPress={() => Alert.alert("You clicked on a card", item.name)}>
+    <ImageBackground
+      source={item.picture || require("../../assets/default_kumuna_pic.jpg")}
+      style={styles.kumunaBackground}>
       <LinearGradient
         colors={["transparent", "rgba(0,0,0,0.7)"]}
         style={{
@@ -57,8 +26,7 @@ const renderKumuna = ({ item }) => (
         }}
       />
       <Text
-        style={{ position: "absolute", bottom: 10, left: 10, fontSize: 24 }}
-      >
+        style={{ position: "absolute", bottom: 10, left: 10, fontSize: 24 }}>
         {item.name}
       </Text>
     </ImageBackground>
@@ -66,8 +34,14 @@ const renderKumuna = ({ item }) => (
 );
 
 export default function ({ navigation }) {
+  const [kumunas, setKumunas] = useState([]);
+
+  useEffect(() => {
+    backendService.getKumunas().then((data) => setKumunas(data));
+  }, []);
+
   let content = null;
-  if (!data || !data.length) {
+  if (!kumunas || !kumunas.length) {
     content = (
       <Text style={{ textAlign: "center" }} category="h5">
         Nothing to show yet 🐣
@@ -77,7 +51,7 @@ export default function ({ navigation }) {
     content = (
       <List
         showsVerticalScrollIndicator={false}
-        data={data}
+        data={kumunas}
         renderItem={renderKumuna}
         style={styles.kumunas}
       />
@@ -91,8 +65,7 @@ export default function ({ navigation }) {
         onPress={() => navigation.navigate("AddKumunaScreen")}
         style={styles.addKumunaButton}
         accessoryLeft={addKumunaIcon}
-        status="danger"
-      ></Button>
+        status="danger"></Button>
     </ScreenLayout>
   );
 }
