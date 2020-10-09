@@ -6,12 +6,13 @@ import ScreenLayout from "../components/ScreenLayout";
 import AsyncAlert from "../utils/AsyncAlert";
 import * as backendService from "../services/backendService";
 import * as yup from "yup";
+import Toast from "react-native-toast-message";
 
 export default function ({ navigation }) {
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState(null);
+  const [name, setName] = useState("");
   const [nameErrors, setNameError] = useState(null);
-  const [imageUri, setImageUri] = useState(null);
+  const [image, setImage] = useState({});
 
   const submitKumunaCreationForm = async () => {
     setNameError(null);
@@ -25,10 +26,14 @@ export default function ({ navigation }) {
     setLoading(true);
     await backendService.createKumuna({
       name: name,
-      imageUrl: imageUri,
+      image: image,
     });
     setLoading(false);
-    await AsyncAlert("Success", `You have created ${name} Kumuna!`);
+    Toast.show({
+      type: "success",
+      text1: "Nice one!",
+      text2: "Kumuna created successfully",
+    });
     navigation.navigate("KumunaListScreen");
   };
 
@@ -60,9 +65,10 @@ export default function ({ navigation }) {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
+      base64: true,
     });
     if (!image.cancelled) {
-      setImageUri(image.uri);
+      setImage({ uri: image.uri, base64: image.base64 });
     }
   };
 
@@ -80,7 +86,7 @@ export default function ({ navigation }) {
           style={{ alignSelf: "flex-start", marginTop: 20 }}
           onPress={pickImage}
           status="basic">
-          {Boolean(imageUri) ? "Change image" : "Choose image"}
+          {Boolean(image.uri) ? "Change image" : "Choose image"}
         </Button>
         <Button style={styles.submitButton} onPress={submitKumunaCreationForm}>
           {loading ? <Spinner status="basic" size="small" /> : "Create Kumuna"}

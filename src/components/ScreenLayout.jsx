@@ -5,7 +5,7 @@ import { Layout, Text } from "@ui-kitten/components";
 export default function (props) {
   return (
     <Layout style={styles.screenContainer}>
-      <Text category="h1" style={{ textAlign: "left" }}>
+      <Text category="h1" style={{ textAlign: "center" }}>
         {props.title}
       </Text>
       <Layout style={styles.contentContainer}>{props.children}</Layout>

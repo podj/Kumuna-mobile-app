@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }) => {
       setAuthError(null);
     } catch (e) {
       setAuthError(e.message);
+      console.error(e);
     }
 
     setLoading(false);
@@ -60,8 +61,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         register,
-      }}
-    >
+      }}>
       {children}
     </AuthContext.Provider>
   );

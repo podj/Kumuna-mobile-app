@@ -1,18 +1,48 @@
-import { Button, Icon, List, ListItem, Text } from "@ui-kitten/components";
+import {
+  Button,
+  Icon,
+  Layout,
+  List,
+  ListItem,
+  Text,
+} from "@ui-kitten/components";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import { Alert, ImageBackground, StyleSheet } from "react-native";
+import Toast from "react-native-toast-message";
 import ScreenLayout from "../components/ScreenLayout";
 import * as backendService from "../services/backendService";
 
+const populateKumunaThumbnail = async (kumuna) => {
+  console.log();
+  if (kumuna.thumbnailUrl) {
+    let thumbnailBase64 = await backendService.downloadImage(
+      kumuna.thumbnailUrl
+    );
+    kumuna.thumbnailUrl = `data:image/jpeg;base64,${thumbnailBase64}`;
+  }
+  return kumuna;
+};
+
 const addKumunaIcon = (props) => <Icon {...props} name="plus-outline" />;
+
+const listPlaceholder = (
+  <Layout>
+    <Text style={{ textAlign: "center" }} category="h5">
+      Nothing to show yet 🐣
+    </Text>
+    <Text style={{ textAlign: "center" }} category="h6">
+      Pull to refresh
+    </Text>
+  </Layout>
+);
 
 const renderKumuna = ({ item }) => (
   <ListItem
     style={styles.card}
     onPress={() => Alert.alert("You clicked on a card", item.name)}>
     <ImageBackground
-      source={item.picture || require("../../assets/default_kumuna_pic.jpg")}
+      source={require("../../assets/default_kumuna_pic.jpg")}
       style={styles.kumunaBackground}>
       <LinearGradient
         colors={["transparent", "rgba(0,0,0,0.7)"]}
@@ -35,32 +65,42 @@ const renderKumuna = ({ item }) => (
 
 export default function ({ navigation }) {
   const [kumunas, setKumunas] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+
+  const loadKumunas = async () => {
+    setLoading(true);
+    backendService
+      .getKumunas()
+      .then(async (data) => {
+        let kumunas = await Promise.all(data.map(populateKumunaThumbnail));
+        setKumunas(kumunas);
+      })
+      .catch(() =>
+        Toast.show({
+          text1: "Oops",
+          text2: "Something went wrong",
+          type: "error",
+          position: "top",
+        })
+      )
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    backendService.getKumunas().then((data) => setKumunas(data));
+    loadKumunas();
   }, []);
 
-  let content = null;
-  if (!kumunas || !kumunas.length) {
-    content = (
-      <Text style={{ textAlign: "center" }} category="h5">
-        Nothing to show yet 🐣
-      </Text>
-    );
-  } else {
-    content = (
+  return (
+    <ScreenLayout title="Kumunas">
       <List
+        ListEmptyComponent={listPlaceholder}
+        onRefresh={loadKumunas}
+        refreshing={isLoading}
         showsVerticalScrollIndicator={false}
         data={kumunas}
         renderItem={renderKumuna}
         style={styles.kumunas}
       />
-    );
-  }
-
-  return (
-    <ScreenLayout title="Kumunas">
-      {content}
       <Button
         onPress={() => navigation.navigate("AddKumunaScreen")}
         style={styles.addKumunaButton}
