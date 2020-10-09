@@ -48,6 +48,10 @@ export const createKumuna = async (kumuna) => {
   return response.data;
 };
 
+export const getKumunaExpenses = async (kumunaId) => {
+  const response = await axios.get(`/kumunas/${kumunaId}/debts`);
+};
+
 export const getKumunas = async () => {
   const response = await axios.get("/kumunas");
   if (response.status !== 200) {

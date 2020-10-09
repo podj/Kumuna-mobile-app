@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   Button,
   Icon,
@@ -37,13 +38,33 @@ const listPlaceholder = (
   </Layout>
 );
 
+=======
+import React from "react";
+import { Alert, ImageBackground, StyleSheet } from "react-native";
+
+import { LinearGradient } from "expo-linear-gradient";
+
+import { List, ListItem, Text } from "@ui-kitten/components";
+
+import FloatButton from "../components/FloatButton";
+import ScreenLayout from "../components/ScreenLayout";
+import * as backendService from "../services/backendService";
+
+>>>>>>> c88f195342a053cf9bc575ee541ab8ff2e7d8c30
 const renderKumuna = ({ item }) => (
   <ListItem
     style={styles.card}
-    onPress={() => Alert.alert("You clicked on a card", item.name)}>
+    onPress={() => Alert.alert("You clicked on a card", item.name)}
+  >
     <ImageBackground
+<<<<<<< HEAD
       source={require("../../assets/default_kumuna_pic.jpg")}
       style={styles.kumunaBackground}>
+=======
+      source={item.picture || require("../../assets/default_kumuna_pic.jpg")}
+      style={styles.kumunaBackground}
+    >
+>>>>>>> c88f195342a053cf9bc575ee541ab8ff2e7d8c30
       <LinearGradient
         colors={["transparent", "rgba(0,0,0,0.7)"]}
         style={{
@@ -56,7 +77,8 @@ const renderKumuna = ({ item }) => (
         }}
       />
       <Text
-        style={{ position: "absolute", bottom: 10, left: 10, fontSize: 24 }}>
+        style={{ position: "absolute", bottom: 10, left: 10, fontSize: 24 }}
+      >
         {item.name}
       </Text>
     </ImageBackground>
@@ -101,11 +123,21 @@ export default function ({ navigation }) {
         renderItem={renderKumuna}
         style={styles.kumunas}
       />
+<<<<<<< HEAD
       <Button
         onPress={() => navigation.navigate("AddKumunaScreen")}
         style={styles.addKumunaButton}
         accessoryLeft={addKumunaIcon}
         status="danger"></Button>
+=======
+    );
+  }
+
+  return (
+    <ScreenLayout title="Kumunas">
+      {content}
+      <FloatButton onPress={() => navigation.navigate("AddKumunaScreen")} />
+>>>>>>> c88f195342a053cf9bc575ee541ab8ff2e7d8c30
     </ScreenLayout>
   );
 }
@@ -120,16 +152,6 @@ const styles = StyleSheet.create({
   kumunas: {
     backgroundColor: "transparent",
     marginTop: 10,
-  },
-  addKumunaButton: {
-    position: "absolute",
-    borderRadius: 50,
-    bottom: 15,
-    right: 15,
-    padding: 0,
-    fontSize: 50,
-    height: 60,
-    width: 60,
   },
   kumunaBackground: {
     resizeMode: "cover",
