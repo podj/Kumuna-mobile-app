@@ -2,7 +2,6 @@ import React from "react";
 import { StyleSheet } from "react-native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import KumunasNavigator from "../navigators/KumunasNavigator";
 import {
   BottomNavigation,
   BottomNavigationTab,
@@ -26,8 +25,7 @@ const BottomTabBar = ({ navigation, state }) => (
   <BottomNavigation
     style={styles.bottomNavigation}
     selectedIndex={state.index}
-    onSelect={(index) => navigation.navigate(state.routeNames[index])}
-  >
+    onSelect={(index) => navigation.navigate(state.routeNames[index])}>
     <BottomNavigationTab
       style={styles.bottomNavigationTab}
       title="Kumunas"

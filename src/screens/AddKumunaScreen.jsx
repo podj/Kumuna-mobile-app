@@ -64,8 +64,9 @@ export default function ({ navigation }) {
     let image = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      quality: 1,
+      quality: 0,
       base64: true,
+      exif: true,
     });
     if (!image.cancelled) {
       setImage({ uri: image.uri, base64: image.base64 });

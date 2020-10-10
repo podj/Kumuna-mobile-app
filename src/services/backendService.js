@@ -30,14 +30,14 @@ export const downloadImage = async (url) => {
 };
 
 export const createKumuna = async (kumuna) => {
-  if (kumuna.thumbnailUrl) {
+  if (kumuna.image) {
     const imageUpload = await uploadImage(kumuna.image);
-    kumuna.thumbnailUrl = await imageUpload.ref.getDownloadURL();
+    kumuna.image = await imageUpload.ref.getDownloadURL();
   }
 
   const response = await axios.post("/kumunas", {
     name: kumuna.name,
-    thumbnailUrl: kumuna.thumbnailUrl,
+    thumbnailUrl: kumuna.image,
   });
 
   if (response.status !== 201) {
