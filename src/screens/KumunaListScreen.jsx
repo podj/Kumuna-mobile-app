@@ -20,7 +20,6 @@ import * as backendService from "../services/backendService";
 import FloatButton from "../components/FloatButton";
 
 const populateKumunaThumbnail = async (kumuna) => {
-  console.log();
   if (kumuna.thumbnailUrl) {
     let thumbnailBase64 = await backendService.downloadImage(
       kumuna.thumbnailUrl
@@ -29,8 +28,6 @@ const populateKumunaThumbnail = async (kumuna) => {
   }
   return kumuna;
 };
-
-const addKumunaIcon = (props) => <Icon {...props} name="plus-outline" />;
 
 const listPlaceholder = (
   <Layout>
