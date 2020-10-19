@@ -3,6 +3,7 @@ import React, { useContext, useEffect } from "react";
 import axios from "axios";
 
 import * as firebaseService from "../services/firebaseService";
+import * as backendService from "../services/backendService";
 
 import { AuthContext } from "../contexts/AuthProvider";
 
@@ -15,11 +16,16 @@ const useAuth = () => {
     if (!user) {
       axios.defaults.headers.common["Authorization"] = undefined;
       return;
+    } else {
+        firebaseService.getUserToken().then(async (token) => {
+          axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+          let appUser = await backendService.getCurrentUser();
+          user.appUser = appUser;
+        });
     }
 
-    firebaseService.getUserToken().then((token) => {
-      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-    });
+    setUser(user);
+
   };
 
   useEffect(() => {

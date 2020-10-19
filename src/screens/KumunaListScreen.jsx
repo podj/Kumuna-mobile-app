@@ -4,6 +4,7 @@ import {
   Layout,
   List,
   ListItem,
+  Spinner,
   Text,
 } from "@ui-kitten/components";
 import { LinearGradient } from "expo-linear-gradient";
@@ -102,11 +103,9 @@ export default function ({ navigation }) {
   return (
     <ScreenLayout title="Kumunas">
       <List
-        tintColor="#ffffff"
         ListEmptyComponent={listPlaceholder}
-        refreshControl={
-          <RefreshControl onRefresh={loadKumunas} refreshing={isLoading} />
-        }
+        onRefresh={loadKumunas}
+        refreshing={isLoading}
         showsVerticalScrollIndicator={false}
         data={kumunas}
         renderItem={renderKumuna}
