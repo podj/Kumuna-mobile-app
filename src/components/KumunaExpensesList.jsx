@@ -7,6 +7,7 @@ import ExpenseItem from "./ExpenseItem";
 import * as backendService from "../services/backendService";
 import { AuthContext } from "../contexts/AuthProvider";
 
+
 const listPlaceholder = (
   <Layout>
     <Text style={{ textAlign: "center" }} category="h5">
@@ -67,15 +68,17 @@ export default function ({ kumunaId }) {
   }, []);
 
   return (
-    <List
-      ListEmptyComponent={listPlaceholder}
-      onRefresh={loadExpenses}
-      refreshing={isLoading}
-      showsVerticalScrollIndicator={false}
-      data={expenses}
-      renderItem={(item) => ExpenseItem(addMembers(item), user.appUser.id)}
-      style={styles.expenses}
-    />
+    <>
+        <List
+          ListEmptyComponent={listPlaceholder}
+          onRefresh={loadExpenses}
+          refreshing={isLoading}
+          showsVerticalScrollIndicator={false}
+          data={expenses}
+          renderItem={(item) => ExpenseItem(addMembers(item), user.appUser.id)}
+          style={styles.expenses}
+        />
+    </>
   );
 }
 

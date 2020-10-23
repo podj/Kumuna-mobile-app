@@ -1,7 +1,7 @@
 import * as axios from "axios";
 import { uploadImage } from "./firebaseService";
 
-axios.defaults.baseURL = "http://192.168.1.178:9200";
+axios.defaults.baseURL = "http://localhost:9200";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 

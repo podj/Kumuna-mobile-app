@@ -16,7 +16,6 @@ import Toast from "react-native-toast-message";
 import { default as mapping } from "./src/mapping.json";
 
 import { AuthProvider } from "./src/contexts/AuthProvider";
-import { KumunaProvider } from "./src/contexts/KumunaProvider";
 import AppNavigator from "./src/navigators/AppNavigator";
 
 const App = () => {
@@ -35,9 +34,7 @@ const App = () => {
           theme={{ ...eva.dark }}
           customMapping={mapping}>
           <AuthProvider>
-            <KumunaProvider>
-              <AppNavigator />
-            </KumunaProvider>
+            <AppNavigator />
           </AuthProvider>
         </ApplicationProvider>
         <Toast topOffset={50} ref={(ref) => Toast.setRef(ref)} />

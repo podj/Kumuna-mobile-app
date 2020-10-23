@@ -1,18 +1,14 @@
 import {
-  Button,
-  Icon,
   Layout,
   List,
   ListItem,
-  Spinner,
   Text,
 } from "@ui-kitten/components";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
   ImageBackground,
-  RefreshControl,
   StyleSheet,
 } from "react-native";
 import Toast from "react-native-toast-message";
