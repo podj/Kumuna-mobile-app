@@ -2,31 +2,50 @@ import React from "react";
 import { StyleSheet } from "react-native";
 
 import { Layout, Text } from "@ui-kitten/components";
+import { getShortMonthName } from "../utils/DateUtils";
 
-const ExpenseItem = ({ title, description, price, date, isDebt }) => {
+
+export default ({ item }, userId) => {
   const lightGreen = "#66FF99";
   const lightRed = "#FF6699";
+
+  const isDebt = item.creditorId !== userId;
+
+  item.createdTime = new Date(item.createdTime);
+  item.date = new Date(item.date);
 
   return (
     <Layout style={styles.row}>
       <Layout style={styles.date}>
-        <Text category="h6">{date.day}</Text>
-        <Text category="p1">{date.month}</Text>
+        <Text category="h6">
+          {item.date.getDate()}
+        </Text>
+        <Text category="p1">
+          {getShortMonthName(item.date)}.
+        </Text>
       </Layout>
       <Layout style={styles.content}>
-        <Text category="h6">{title}</Text>
-        <Text category="p1">{description}</Text>
+        <Text category="h6" ellipsizeMode="tail" numberOfLines={1}>
+          {item.name}
+        </Text>
+        <Text
+          category="p1"
+          ellipsizeMode="tail"
+          numberOfLines={1}
+          appearance="hint">
+          {item.debtors.map((d) => d.displayName).join(", ")} owe
+          {item.debtors.length > 1 ? "" : "s"}{" "}
+          {isDebt ? item.creditor.displayName : "you"}
+        </Text>
       </Layout>
       <Layout style={styles.price}>
         <Text category="p1" style={{ color: isDebt ? lightRed : lightGreen }}>
-          {price}
+          {item.totalAmount}₪
         </Text>
       </Layout>
     </Layout>
   );
 };
-
-export default ExpenseItem;
 
 const styles = StyleSheet.create({
   row: {
@@ -38,19 +57,18 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   date: {
-    width: 50,
+    flex: 1,
     alignItems: "center",
     marginRight: 10,
     padding: 8,
     borderRadius: 5,
-    backgroundColor: "black",
   },
   content: {
-    flex: 1,
+    minWidth: 0,
+    flex: 7,
   },
   price: {
-    width: 50,
-    marginLeft: 10,
+    flex: 2,
     alignItems: "flex-end",
   },
 });

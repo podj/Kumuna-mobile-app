@@ -1,7 +1,7 @@
 import * as axios from "axios";
 import { uploadImage } from "./firebaseService";
 
-axios.defaults.baseURL = "http://192.168.1.167:9200";
+axios.defaults.baseURL = "http://localhost:9200";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 
@@ -13,7 +13,6 @@ export const createUser = async (user) => {
   });
 
   if (response.status !== 201) {
-    console.log(response.data);
     throw new Error("Failed to create user");
   }
 
@@ -50,6 +49,12 @@ export const createKumuna = async (kumuna) => {
 
 export const getKumunaExpenses = async (kumunaId) => {
   const response = await axios.get(`/kumunas/${kumunaId}/debts`);
+
+  if (response.status !== 200) {
+    throw new Error(`getKumunaExpenses failed: ${response}`);
+  }
+
+  return response.data;
 };
 
 export const getKumunas = async () => {
@@ -57,6 +62,27 @@ export const getKumunas = async () => {
   if (response.status !== 200) {
     console.error("getKumunas failed", response);
     throw new Error("Failed to fetch kumunas");
+  }
+
+  return response.data;
+};
+
+export const getKumunaMembers = async (kumunaId) => {
+  const response = await axios.get(`/kumunas/${kumunaId}/memberships`);
+
+  if (response.status !== 200) {
+    console.error(`Error loading response: ${response}`);
+    throw new Error(`Failed fetching kumuna members for kumuna ${kumunaId}`);
+  }
+
+  return response.data;
+};
+
+export const getCurrentUser = async () => {
+  const response = await axios.get("/users/me");
+  if (response.status !== 200) {
+    console.error("getCurrentUser failed", response);
+    throw new Error("Failed to fetch current user");
   }
 
   return response.data;
