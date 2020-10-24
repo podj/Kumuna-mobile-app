@@ -87,3 +87,12 @@ export const getCurrentUser = async () => {
 
   return response.data;
 };
+
+export const getBalanceForKumunaId = async (kumunaId) => {
+  const response = await axios.get(`/kumunas/${kumunaId}/self-summary`);
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch self summary");
+  }
+
+  return response.data;
+};

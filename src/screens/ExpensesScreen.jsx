@@ -1,40 +1,97 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import ScreenLayout from "../components/ScreenLayout";
 import FloatButton from "../components/FloatButton";
 import KumunaExpensesList from "../components/KumunaExpensesList";
-import { Layout, Text, useTheme } from "@ui-kitten/components";
-import { getKumunas } from "../services/backendService";
-import { Animated, StyleSheet, View } from "react-native";
+import { Layout, Spinner, Text, useTheme } from "@ui-kitten/components";
+import * as backendService from "../services/backendService";
+import {
+  Animated,
+  Image,
+  ActivityIndicator,
+  Platform,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from "react-native";
 import Toast from "react-native-toast-message";
 import StickyParallaxHeader from "react-native-sticky-parallax-header";
 
-
-const child = <Text>Hi!</Text>;
+const populateKumunaThumbnail = async (kumuna) => {
+  if (kumuna.thumbnailUrl) {
+    let thumbnailBase64 = await backendService.downloadImage(
+      kumuna.thumbnailUrl
+    );
+    kumuna.thumbnailUrl = `data:image/jpeg;base64,${thumbnailBase64}`;
+  }
+  return kumuna;
+};
 
 const ExpensesScreen = () => {
   const [visible, setVisible] = useState(false);
   const [kumunas, setKumunas] = useState([]);
   const [scroll, setScroll] = useState(new Animated.Value(0));
   const theme = useTheme();
+  const [endReached, setEndReached] = useState(false);
+  const [topReached, setTopReached] = useState(true);
+  const [stickyHeaderEndReached, setStickyHeaderEndReached] = useState(false);
+  const [stickyHeaderTopReached, setStickyHeaderTopReached] = useState(true);
+  const [isLoading, setLoading] = useState(false);
+  const [selectedKumunaIndex, setSelectedKumunaIndex] = useState(0);
+  const [userBalance, setUserBalance] = useState(0);
+
+  const getKumunasTabs = () => {
+    const kumunasTabs = [];
+    for (let i = 0; i < kumunas.length; i++) {
+      let kumuna = kumunas[i];
+      kumunasTabs.push({
+        title: kumuna.name,
+        content: (
+          <Layout
+            style={{
+              paddingHorizontal: 20,
+            }}>
+            <KumunaExpensesList
+              onScroll={onScroll}
+              scrollEnabled={
+                Platform.OS == "andorind" ? true : shouldBeEnabled()
+              }
+              nestedScrollEnabled
+              shouldComponentUpdate={isLoading}
+              kumunaId={kumuna.id}
+            />
+          </Layout>
+        ),
+      });
+    }
+    return kumunasTabs;
+  };
 
   const loadKumunas = async () => {
     try {
-      let kumunas = await getKumunas();
+      let rawKumunas = await backendService.getKumunas();
+      let kumunas = await Promise.all(rawKumunas.map(populateKumunaThumbnail));
       setKumunas(kumunas);
-    } catch (e) {
-      console.log(`Error: ${e}`);
-      Toast.show({
-        type: "error",
-        text1: "Oops",
-        text2: "Something went wrong",
-      });
+    } catch (e) {}
+  };
+
+  const refreshUserBalance = async () => {
+    const kumuna = kumunas[selectedKumunaIndex];
+    if (!kumuna) {
+      return;
     }
+    const balance = await backendService.getBalanceForKumunaId(kumuna.id);
+    setUserBalance(balance);
+  };
+
+  const refreshSelectedKumunaData = async () => {
+    setUserBalance(null);
+    await loadKumunas();
+    await refreshUserBalance();
   };
 
   useEffect(() => {
-    loadKumunas();
-  }, []);
+    refreshSelectedKumunaData();
+  }, [selectedKumunaIndex]);
 
   const renderHeader = () => {
     const opacity = scroll.interpolate({
@@ -43,10 +100,28 @@ const ExpensesScreen = () => {
       extrapolate: "clamp",
     });
 
+    let userBalanceText = <Spinner size="tiny" status="basic" />;
+    if (userBalance || userBalance === 0) {
+      userBalanceText = (
+        <Text
+          style={{ fontSize: 20 }}
+          status={
+            userBalance < 0 ? "danger" : "success"
+          }>{`${userBalance.toLocaleString("en")}₪`}</Text>
+      );
+    }
+
     return (
       <View style={styles.headerWrapper}>
         <Animated.View style={{ opacity }}>
-          <Text style={styles.headerTitle}>Your balance: 1,500$</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}>
+            <Text style={styles.headerTitle}>Your balance:</Text>
+            {userBalanceText}
+          </View>
         </Animated.View>
       </View>
     );
@@ -59,27 +134,72 @@ const ExpensesScreen = () => {
       extrapolate: "clamp",
     });
 
+    let kumuna = kumunas[selectedKumunaIndex];
+    let userBalanceText = <Spinner size="tiny" status="basic" />;
+    if (userBalance || userBalance === 0) {
+      userBalanceText = (
+        <Text
+          appearance="hint"
+          style={[styles.message, { marginLeft: 5 }]}
+          status={
+            userBalance < 0 ? "danger" : "success"
+          }>{`${userBalance.toLocaleString("en")}₪`}</Text>
+      );
+    }
+
     return (
       <View style={styles.foreground}>
         <Animated.View style={{ opacity }}>
-          <Text style={styles.message}>You balance: 1,500$</Text>
+          <Text style={styles.stickyHeaederTitle}>{kumuna?.name}</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              height: 30,
+            }}>
+            <Text style={styles.message} appearance="hint">
+              Your balance:
+            </Text>
+            {userBalanceText}
+          </View>
         </Animated.View>
       </View>
     );
   };
 
-  const kumunasTabs = [];
-  for (let i = 0; i < kumunas.length; i++) {
-    let kumuna = kumunas[i];
-    kumunasTabs.push({
-      title: kumuna.name,
-      content: <KumunaExpensesList kumunaId={kumuna.id} />,
-    });
-  }
+  const shouldBeEnabled = () => {
+    const bottomCondition = endReached && stickyHeaderEndReached;
+    const topCondition = topReached && stickyHeaderTopReached;
+    return bottomCondition || !topCondition;
+  };
+
+  const onScroll = ({ nativeEvent }) => {
+    const { contentOffset, layoutMeasurement, contentSize } = nativeEvent;
+    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 20) {
+      setEndReached(true);
+      setTopReached(false);
+    }
+
+    if (contentOffset.y <= 0) {
+      setTopReached(true);
+      setEndReached(false);
+      setStickyHeaderTopReached(true);
+    }
+  };
 
   return (
     <Layout style={{ flex: 1 }}>
       <StickyParallaxHeader
+        refreshControl={
+          <RefreshControl
+            style={{ zIndex: 1 }}
+            refreshing={isLoading}
+            onRefresh={() => {
+              setLoading(true);
+              refreshSelectedKumunaData().then(() => setLoading(false));
+            }}
+          />
+        }
         header={renderHeader()}
         foreground={renderForeground()}
         headerSize={() => {}}
@@ -90,9 +210,10 @@ const ExpensesScreen = () => {
         tabsContainerBackgroundColor={theme["background-basic-color-1"]}
         parallaxHeight={100}
         headerHeight={80}
-        bounces={false}
-        onEndReached={() => {}}
-        tabs={kumunasTabs}
+        onChangeTab={({ i }) => {
+          setSelectedKumunaIndex(i);
+        }}
+        tabs={getKumunasTabs()}
         scrollEvent={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scroll } } }],
           { useNativeDriver: false }
@@ -114,14 +235,15 @@ const styles = StyleSheet.create({
   foreground: {
     flex: 1,
     justifyContent: "center",
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     paddingBottom: 40,
   },
   message: {
-    color: "white",
-    fontSize: 24,
-    paddingTop: 24,
+    fontSize: 20,
     paddingBottom: 7,
+  },
+  stickyHeaederTitle: {
+    fontSize: 30,
   },
   headerWrapper: {
     width: "100%",
@@ -133,7 +255,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    color: "white",
     margin: 12,
   },
   tabsWrapper: {

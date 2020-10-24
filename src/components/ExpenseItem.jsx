@@ -17,12 +17,8 @@ export default ({ item }, userId) => {
   return (
     <Layout style={styles.row}>
       <Layout style={styles.date}>
-        <Text category="h6">
-          {item.date.getDate()}
-        </Text>
-        <Text category="p1">
-          {getShortMonthName(item.date)}.
-        </Text>
+        <Text category="h6">{item.date.getDate()}</Text>
+        <Text category="p1">{getShortMonthName(item.date)}.</Text>
       </Layout>
       <Layout style={styles.content}>
         <Text category="h6" ellipsizeMode="tail" numberOfLines={1}>
@@ -40,7 +36,7 @@ export default ({ item }, userId) => {
       </Layout>
       <Layout style={styles.price}>
         <Text category="p1" style={{ color: isDebt ? lightRed : lightGreen }}>
-          {item.totalAmount}₪
+          {item.totalAmount.toLocaleString("en")}₪
         </Text>
       </Layout>
     </Layout>

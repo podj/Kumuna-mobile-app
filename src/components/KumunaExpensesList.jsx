@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
 import { getKumunaExpenses } from "../services/backendService";
@@ -66,20 +66,20 @@ export default function (props) {
     loadKumuna()
       .then(() => loadExpenses())
       .catch(console.log);
-  }, []);
+  }, [props.shouldComponentUpdate]);
 
   return (
     <>
-        <List
-          {...props}
-          ListEmptyComponent={listPlaceholder}
-          onRefresh={loadExpenses}
-          refreshing={isLoading}
-          showsVerticalScrollIndicator={false}
-          data={expenses}
-          renderItem={(item) => ExpenseItem(populateDebtorsAndCreditor(item), user.appUser.id)}
-          style={styles.expenses}
-        />
+      <List
+        {...props}
+        ListEmptyComponent={listPlaceholder}
+        showsVerticalScrollIndicator={false}
+        data={expenses}
+        renderItem={(item) =>
+          ExpenseItem(populateDebtorsAndCreditor(item), user.appUser.id)
+        }
+        style={styles.expenses}
+      />
     </>
   );
 }
