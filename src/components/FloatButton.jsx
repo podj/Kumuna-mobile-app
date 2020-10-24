@@ -11,7 +11,7 @@ const FloatButton = ({ onPress, icon }) => {
       accessoryLeft={
         icon ? icon : (props) => <Icon {...props} name="plus-outline" />
       }
-      status="danger"
+      // status="danger"
     ></Button>
   );
 };
@@ -23,10 +23,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderRadius: 50,
     bottom: 10,
-    right: 10,
+    right: 6,
     padding: 0,
     fontSize: 50,
     height: 50,
     width: 50,
+    backgroundColor: "#4dabf5",
   },
 });

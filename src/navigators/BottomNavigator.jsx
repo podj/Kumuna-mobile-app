@@ -13,11 +13,9 @@ import KumunasNavigator from "./KumunasNavigator";
 
 import SharedScheduleScreen from "../screens/SharedScheduleScreen";
 
-const KumunasIcon = (props) => <Icon {...props} name="home-outline" />;
-const ExpensesIcon = (props) => <Icon {...props} name="credit-card-outline" />;
-const SharedScheduleIcon = (props) => (
-  <Icon {...props} name="calendar-outline" />
-);
+const KumunasIcon = (props) => <Icon {...props} name="home" />;
+const ExpensesIcon = (props) => <Icon {...props} name="credit-card" />;
+const SharedScheduleIcon = (props) => <Icon {...props} name="calendar" />;
 
 const { Navigator, Screen } = createBottomTabNavigator();
 

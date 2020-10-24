@@ -19,13 +19,14 @@ const listPlaceholder = (
   </Layout>
 );
 
-export default function ({ kumunaId }) {
+export default function (props) {
+  const { kumunaId } = props;
   const { user } = useContext(AuthContext);
   const [kumunaMembers, setKumunaMembers] = useState(null);
   const [expenses, setExpenses] = useState(null);
   const [isLoading, setLoading] = useState(false);
 
-  const addMembers = (item) => {
+  const populateDebtorsAndCreditor = (item) => {
     const expense = item.item;
     expense.debtors = [];
     for (var i = 0; i < expense.debtorsIds.length; i++) {
@@ -70,12 +71,13 @@ export default function ({ kumunaId }) {
   return (
     <>
         <List
+          {...props}
           ListEmptyComponent={listPlaceholder}
           onRefresh={loadExpenses}
           refreshing={isLoading}
           showsVerticalScrollIndicator={false}
           data={expenses}
-          renderItem={(item) => ExpenseItem(addMembers(item), user.appUser.id)}
+          renderItem={(item) => ExpenseItem(populateDebtorsAndCreditor(item), user.appUser.id)}
           style={styles.expenses}
         />
     </>

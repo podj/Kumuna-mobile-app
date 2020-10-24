@@ -13,16 +13,16 @@ const useAuth = () => {
   const handleAuthStateChange = (user) => {
     if (!user) {
       axios.defaults.headers.common["Authorization"] = undefined;
+      setUser(user);
       return;
-    } else {
-      firebaseService.getUserToken().then(async (token) => {
-        axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-        let appUser = await backendService.getCurrentUser();
-        user.appUser = appUser;
-      });
     }
 
-    setUser(user);
+    firebaseService.getUserToken().then(async (token) => {
+      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+      let appUser = await backendService.getCurrentUser();
+      user.appUser = appUser;
+      setUser(user);
+    });
   };
 
   useEffect(() => {

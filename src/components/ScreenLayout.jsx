@@ -11,11 +11,18 @@ export default function (props) {
     bottomModal = <BottomModal {...props.bottomModal}></BottomModal>;
   }
 
-  return (
-    <Layout style={styles.screenContainer}>
+  let title = <></>;
+  if (props.title) {
+    title = (
       <Text category="h1" style={{ textAlign: "center" }}>
         {props.title}
       </Text>
+    );
+  }
+
+  return (
+    <Layout style={styles.screenContainer}>
+      {title}
       <Layout style={styles.contentContainer}>{props.children}</Layout>
       {bottomModal}
     </Layout>
