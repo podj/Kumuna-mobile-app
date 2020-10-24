@@ -13,12 +13,9 @@ const Selector = ({ data, label, value, textValue, onValueChange, multiSelect })
       onValueChange(item.name);
       setShowList(false);
     } else {
-      console.log('value.some((i) => i.id === item.id)', value.some((i) => i.id === item.id));
       if (value.some((i) => i.id === item.id)) {
-        console.log("object");
         onValueChange(value.filter((i) => i.id !== item.id));
       } else {
-        console.log('value.concat([item])', value.concat([item]));
         onValueChange(value.concat([item]));
       }
     }
