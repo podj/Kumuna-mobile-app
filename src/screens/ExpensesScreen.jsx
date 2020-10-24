@@ -3,25 +3,20 @@ import React, { useState } from "react";
 import ScreenLayout from "../components/ScreenLayout";
 import FloatButton from "../components/FloatButton";
 import KumunaExpensesList from "../components/KumunaExpensesList";
-import { Text } from "@ui-kitten/components";
-
-const child = <Text>Hi!</Text>;
+import AddExpenseForm from "../components/AddExpenseForm";
+import BottomModal from "../components/BottomModal";
 
 const ExpensesScreen = () => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   return (
-    <ScreenLayout
-      title="Expenses"
-      bottomModal={{
-        visible,
-        onDismiss: () => {
-          setVisible(false); 
-        },
-        child,
-      }}>
+    <ScreenLayout title="Expenses">
       <KumunaExpensesList kumunaId={1} />
       <FloatButton onPress={() => setVisible(true)} />
+      
+      <BottomModal visible={visible} onDismiss={() => setVisible(false)}>
+        <AddExpenseForm />
+      </BottomModal>
     </ScreenLayout>
   );
 };
