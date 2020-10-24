@@ -1,25 +1,50 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import { Select, List, ListItem } from "@ui-kitten/components";
+import { Select, List, ListItem, useTheme } from "@ui-kitten/components";
 
-const Selector = ({ data, label, value, onValueChange }) => {
+const Selector = ({ data, label, value, textValue, onValueChange, multiSelect }) => {
+  const theme = useTheme();
+
   const [showList, setShowList] = useState(false);
 
   const handlePressOut = (item) => {
-    onValueChange(item.name);
-    setShowList(false);
+    if (!multiSelect) {
+      onValueChange(item.name);
+      setShowList(false);
+    } else {
+      console.log('value.some((i) => i.id === item.id)', value.some((i) => i.id === item.id));
+      if (value.some((i) => i.id === item.id)) {
+        console.log("object");
+        onValueChange(value.filter((i) => i.id !== item.id));
+      } else {
+        console.log('value.concat([item])', value.concat([item]));
+        onValueChange(value.concat([item]));
+      }
+    }
   };
 
   const renderListItem = ({ item }) => {
-    return <ListItem title={item.name} onPress={() => handlePressOut(item)} />;
+    return multiSelect ? (
+      <ListItem
+        title={item.name}
+        onPress={() => handlePressOut(item)}
+        style={{
+          backgroundColor: value.some((i) => i.id === item.id)
+            ? theme['background-basic-color-3']
+            : theme['background-basic-color-1'],
+        }}
+      />
+    ) : (
+      <ListItem title={item.name} onPress={() => handlePressOut(item)} />
+    );
   };
 
   return (
     <View>
       <Select
         label={label}
-        value={value}
+        value={multiSelect ? textValue : value}
         onPressIn={() => setShowList(!showList)}
       />
       <List

@@ -69,6 +69,15 @@ const AddExpenseForm = () => {
     onSubmit: (values) => console.log("values", values),
   });
 
+  const [debtors, setDebtors] = useState([]);
+
+  const getDebtorsValue = () => {
+    return debtors.reduce((acc, curr, index) => {
+      console.log('curr', curr);
+      return index === 0 ? acc + curr.name : acc + ", " + curr.name
+    }, "");
+  }
+
   return (
     <View style={styles.container}>
       <Input
@@ -84,7 +93,20 @@ const AddExpenseForm = () => {
         data={values}
         value={formik.values.creditor}
         onValueChange={formik.handleChange("creditor")}
+        multiSelect={false}
       />
+
+      <Selector
+        label={"Debtors"}
+        data={values}
+        value={debtors}
+        textValue={getDebtorsValue()}
+        onValueChange={setDebtors}
+        multiSelect={true}
+      />
+
+      {/* <Text>{getDebtorsValue()}</Text> */}
+
     </View>
   );
 };
