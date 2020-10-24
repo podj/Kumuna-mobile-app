@@ -22,70 +22,79 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <ScreenLayout title="Login">
-      <Formik
-        initialValues={formConfig.initialValues}
-        validationSchema={formConfig.validationSchema}
-        onSubmit={(values) => login(values.email, values.password)}>
-        {({
-          values,
-          errors,
-          isValid,
-          handleBlur,
-          handleChange,
-          handleSubmit,
-        }) => {
-          return (
-            <Layout style={styles.form}>
-              {authError ? (
-                <Text status="danger" style={styles.error}>
-                  {authError}
-                </Text>
-              ) : null}
+      <Layout style={styles.container}>
+        <Formik
+          initialValues={formConfig.initialValues}
+          validationSchema={formConfig.validationSchema}
+          onSubmit={(values) => login(values.email, values.password)}
+        >
+          {({
+            values,
+            errors,
+            isValid,
+            handleBlur,
+            handleChange,
+            handleSubmit,
+          }) => {
+            return (
+              <Layout style={styles.form}>
+                {authError ? (
+                  <Text status="danger" style={styles.error}>
+                    {authError}
+                  </Text>
+                ) : null}
 
-              <Input
-                label="Email Address"
-                value={values.email}
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                status={!isValid && errors.email ? "danger" : "basic"}
-                caption={!isValid && errors.email ? errors.email : ""}
-                style={styles.input}
-              />
+                <Input
+                  label="Email Address"
+                  value={values.email}
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                  status={!isValid && errors.email ? "danger" : "basic"}
+                  caption={!isValid && errors.email ? errors.email : ""}
+                  style={styles.input}
+                />
 
-              <Input
-                label="Password"
-                value={values.password}
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-                secureTextEntry={true}
-                status={!isValid && errors.password ? "danger" : "basic"}
-                caption={!isValid && errors.password ? errors.password : ""}
-                style={styles.input}
-              />
+                <Input
+                  label="Password"
+                  value={values.password}
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  secureTextEntry={true}
+                  status={!isValid && errors.password ? "danger" : "basic"}
+                  caption={!isValid && errors.password ? errors.password : ""}
+                  style={styles.input}
+                />
 
-              <Button
-                onPress={handleSubmit}
-                disabled={!isValid}
-                style={styles.submitButton}>
-                {loading ? <Spinner status="basic" size="tiny" /> : "Sign In"}
-              </Button>
+                <Button
+                  onPress={handleSubmit}
+                  disabled={!isValid}
+                  style={styles.submitButton}
+                >
+                  {loading ? <Spinner status="basic" size="tiny" /> : "Sign In"}
+                </Button>
 
-              <Button
-                appearance="ghost"
-                status="basic"
-                disabled={loading}
-                onPress={() => navigation.navigate("Registration")}>
-                or register
-              </Button>
-            </Layout>
-          );
-        }}
-      </Formik>
+                <Button
+                  appearance="ghost"
+                  status="basic"
+                  disabled={loading}
+                  onPress={() => navigation.navigate("Registration")}
+                >
+                  or register
+                </Button>
+              </Layout>
+            );
+          }}
+        </Formik>
+      </Layout>
     </ScreenLayout>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    height: "100%",
+  },
   form: {
     paddingTop: 30,
     flex: 1,

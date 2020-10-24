@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 export default function (props) {
-  const { visible, child, onDismiss } = props;
+  const { visible, children, onDismiss } = props;
   const [panY, setPanY] = useState(
     new Animated.Value(Dimensions.get("screen").height)
   );
@@ -64,12 +64,14 @@ export default function (props) {
       animationType="fade"
       visible={visible}
       transparent
-      onRequestClose={dismiss}>
+      onRequestClose={dismiss}
+    >
       <Pressable style={styles.overlay} onPress={dismiss}>
         <Animated.View
           style={[styles.container, { top }]}
-          {...panResponders.panHandlers}>
-          {child}
+          {...panResponders.panHandlers}
+        >
+          {children}
         </Animated.View>
       </Pressable>
     </Modal>
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   container: {
-    height: "65%",
+    height: "80%",
     backgroundColor: "#23395d",
     paddingTop: 12,
     borderTopRightRadius: 12,

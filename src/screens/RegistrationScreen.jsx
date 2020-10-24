@@ -27,88 +27,96 @@ const RegistrationScreen = ({ navigation }) => {
 
   return (
     <ScreenLayout title="Let's get started">
-      <Formik
-        initialValues={formConfig.initialValues}
-        validationSchema={formConfig.validationSchema}
-        onSubmit={(values) =>
-          register(values.email, values.name, values.password)
-        }
-      >
-        {({
-          values,
-          errors,
-          isValid,
-          handleBlur,
-          handleChange,
-          handleSubmit,
-        }) => {
-          return (
-            <Layout style={styles.form}>
-              {authError ? (
-                <Text status="danger" style={styles.error}>
-                  {authError}
-                </Text>
-              ) : null}
+      <Layout style={styles.container}>
+        <Formik
+          initialValues={formConfig.initialValues}
+          validationSchema={formConfig.validationSchema}
+          onSubmit={(values) =>
+            register(values.email, values.name, values.password)
+          }
+        >
+          {({
+            values,
+            errors,
+            isValid,
+            handleBlur,
+            handleChange,
+            handleSubmit,
+          }) => {
+            return (
+              <Layout style={styles.form}>
+                {authError ? (
+                  <Text status="danger" style={styles.error}>
+                    {authError}
+                  </Text>
+                ) : null}
 
-              <Input
-                label="Email Address"
-                value={values.email}
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                status={!isValid && errors.email ? "danger" : "basic"}
-                caption={!isValid && errors.email ? errors.email : ""}
-                style={styles.input}
-              />
+                <Input
+                  label="Email Address"
+                  value={values.email}
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                  status={!isValid && errors.email ? "danger" : "basic"}
+                  caption={!isValid && errors.email ? errors.email : ""}
+                  style={styles.input}
+                />
 
-              <Input
-                label="Name"
-                value={values.name}
-                onChangeText={handleChange("name")}
-                onBlur={handleBlur("name")}
-                status={!isValid && errors.name ? "danger" : "basic"}
-                caption={!isValid && errors.name ? errors.name : ""}
-                style={styles.input}
-              />
+                <Input
+                  label="Name"
+                  value={values.name}
+                  onChangeText={handleChange("name")}
+                  onBlur={handleBlur("name")}
+                  status={!isValid && errors.name ? "danger" : "basic"}
+                  caption={!isValid && errors.name ? errors.name : ""}
+                  style={styles.input}
+                />
 
-              <Input
-                label="Password"
-                value={values.password}
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-                secureTextEntry={true}
-                status={!isValid && errors.password ? "danger" : "basic"}
-                caption={!isValid && errors.password ? errors.password : ""}
-                style={styles.input}
-              />
+                <Input
+                  label="Password"
+                  value={values.password}
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  secureTextEntry={true}
+                  status={!isValid && errors.password ? "danger" : "basic"}
+                  caption={!isValid && errors.password ? errors.password : ""}
+                  style={styles.input}
+                />
 
-              <Button
-                onPress={handleSubmit}
-                disabled={!isValid}
-                style={styles.submitButton}
-                accessoryLeft={
-                  loading ? () => <Spinner status="basic" size="tiny" /> : null
-                }
-              >
-                Register
-              </Button>
+                <Button
+                  onPress={handleSubmit}
+                  disabled={!isValid}
+                  style={styles.submitButton}
+                  accessoryLeft={
+                    loading
+                      ? () => <Spinner status="basic" size="tiny" />
+                      : null
+                  }
+                >
+                  Register
+                </Button>
 
-              <Button
-                appearance="ghost"
-                status="basic"
-                disabled={loading}
-                onPress={() => navigation.navigate("Login")}
-              >
-                or login
-              </Button>
-            </Layout>
-          );
-        }}
-      </Formik>
+                <Button
+                  appearance="ghost"
+                  status="basic"
+                  disabled={loading}
+                  onPress={() => navigation.navigate("Login")}
+                >
+                  or login
+                </Button>
+              </Layout>
+            );
+          }}
+        </Formik>
+      </Layout>
     </ScreenLayout>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    height: "100%",
+  },
   form: {
     flex: 1,
     paddingTop: 30,

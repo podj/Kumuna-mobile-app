@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import FloatButton from "../components/FloatButton";
 import KumunaExpensesList from "../components/KumunaExpensesList";
+<<<<<<< HEAD
 import { Layout, Spinner, Text, useTheme } from "@ui-kitten/components";
 import * as backendService from "../services/backendService";
 import {
@@ -221,6 +222,23 @@ const ExpensesScreen = () => {
       />
       <FloatButton onPress={() => setVisible(true)} style={{}} />
     </Layout>
+=======
+import AddExpenseForm from "../components/AddExpenseForm";
+import BottomModal from "../components/BottomModal";
+
+const ExpensesScreen = () => {
+  const [visible, setVisible] = useState(true);
+
+  return (
+    <ScreenLayout title="Expenses">
+      <KumunaExpensesList kumunaId={1} />
+      <FloatButton onPress={() => setVisible(true)} />
+      
+      <BottomModal visible={visible} onDismiss={() => setVisible(false)}>
+        <AddExpenseForm />
+      </BottomModal>
+    </ScreenLayout>
+>>>>>>> 5d5679e47f61e5d4e7a085f338831c8f20010cf8
   );
 };
 
