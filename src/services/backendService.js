@@ -48,7 +48,7 @@ export const createKumuna = async (kumuna) => {
 };
 
 export const getKumunaExpenses = async (kumunaId) => {
-  const response = await axios.get(`/kumunas/${kumunaId}/debts`);
+  const response = await axios.get(`/kumunas/${kumunaId}/loans`);
 
   if (response.status !== 200) {
     throw new Error(`getKumunaExpenses failed: ${response}`);

@@ -1,16 +1,7 @@
 import React, { useState } from "react";
 
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  TouchableOpacity,
-  VirtualizedList,
-} from "react-native";
-import { IndexPath, Input, Layout, Text } from "@ui-kitten/components";
-import MultiSelect from "react-native-multiple-select";
-import { Picker } from "@react-native-community/picker";
-import { MultipleSelectPicker } from "react-native-multi-select-picker";
+import { StyleSheet, View } from "react-native";
+import { Input } from "@ui-kitten/components";
 import Selector from "./Selector";
 
 import { useFormik } from "formik";

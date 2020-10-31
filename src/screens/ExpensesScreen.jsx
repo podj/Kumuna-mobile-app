@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 
 import FloatButton from "../components/FloatButton";
 import KumunaExpensesList from "../components/KumunaExpensesList";
-<<<<<<< HEAD
+import AddExpenseForm from "../components/AddExpenseForm";
+import BottomModal from "../components/BottomModal";
 import { Layout, Spinner, Text, useTheme } from "@ui-kitten/components";
 import * as backendService from "../services/backendService";
 import {
@@ -41,6 +42,7 @@ const ExpensesScreen = () => {
   const [userBalance, setUserBalance] = useState(0);
 
   const getKumunasTabs = () => {
+
     const kumunasTabs = [];
     for (let i = 0; i < kumunas.length; i++) {
       let kumuna = kumunas[i];
@@ -58,6 +60,7 @@ const ExpensesScreen = () => {
               }
               nestedScrollEnabled
               shouldComponentUpdate={isLoading}
+              onDoneLoading={() => {setLoading(false)}}
               kumunaId={kumuna.id}
             />
           </Layout>
@@ -85,6 +88,7 @@ const ExpensesScreen = () => {
   };
 
   const refreshSelectedKumunaData = async () => {
+    setLoading(true);
     setUserBalance(null);
     await loadKumunas();
     await refreshUserBalance();
@@ -139,12 +143,17 @@ const ExpensesScreen = () => {
     let userBalanceText = <Spinner size="tiny" status="basic" />;
     if (userBalance || userBalance === 0) {
       userBalanceText = (
-        <Text
-          appearance="hint"
-          style={[styles.message, { marginLeft: 5 }]}
-          status={
-            userBalance < 0 ? "danger" : "success"
-          }>{`${userBalance.toLocaleString("en")}₪`}</Text>
+        <>
+          <Text style={styles.message} appearance="hint">
+                Your balance:
+              </Text>
+          <Text
+            appearance="hint"
+            style={[styles.message, { marginLeft: 5 }]}
+            status={
+              userBalance < 0 ? "danger" : "success"
+            }>{`${userBalance.toLocaleString("en")}₪`}</Text>
+          </>
       );
     }
 
@@ -158,9 +167,6 @@ const ExpensesScreen = () => {
               alignItems: "center",
               height: 30,
             }}>
-            <Text style={styles.message} appearance="hint">
-              Your balance:
-            </Text>
             {userBalanceText}
           </View>
         </Animated.View>
@@ -195,10 +201,7 @@ const ExpensesScreen = () => {
           <RefreshControl
             style={{ zIndex: 1 }}
             refreshing={isLoading}
-            onRefresh={() => {
-              setLoading(true);
-              refreshSelectedKumunaData().then(() => setLoading(false));
-            }}
+            onRefresh={refreshSelectedKumunaData}
           />
         }
         header={renderHeader()}
@@ -220,25 +223,11 @@ const ExpensesScreen = () => {
           { useNativeDriver: false }
         )}
       />
-      <FloatButton onPress={() => setVisible(true)} style={{}} />
-    </Layout>
-=======
-import AddExpenseForm from "../components/AddExpenseForm";
-import BottomModal from "../components/BottomModal";
-
-const ExpensesScreen = () => {
-  const [visible, setVisible] = useState(true);
-
-  return (
-    <ScreenLayout title="Expenses">
-      <KumunaExpensesList kumunaId={1} />
-      <FloatButton onPress={() => setVisible(true)} />
-      
+      <FloatButton onPress={() => setVisible(true)} style={{ right: 26 }} />
       <BottomModal visible={visible} onDismiss={() => setVisible(false)}>
         <AddExpenseForm />
       </BottomModal>
-    </ScreenLayout>
->>>>>>> 5d5679e47f61e5d4e7a085f338831c8f20010cf8
+    </Layout>
   );
 };
 
@@ -246,10 +235,6 @@ export default ExpensesScreen;
 
 
 const styles = StyleSheet.create({
-  content: {
-    height: 1000,
-    paddingTop: 10,
-  },
   foreground: {
     flex: 1,
     justifyContent: "center",

@@ -1,11 +1,13 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { Layout } from "@ui-kitten/components";
+import { Layout, Text } from "@ui-kitten/components";
 
 export default function (props) {
   return (
     <Layout style={styles.screenContainer}>
-      {title}
+      <Text category="h1" style={{ textAlign: "center" }}>
+        {props.title}
+      </Text>
       <Layout style={styles.contentContainer}>{props.children}</Layout>
     </Layout>
   );
