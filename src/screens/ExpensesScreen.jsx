@@ -100,7 +100,7 @@ const ExpensesScreen = () => {
 
   const renderHeader = () => {
     const opacity = scroll.interpolate({
-      inputRange: [0, 40, 80],
+      inputRange: [0, 5, 10],
       outputRange: [0, 0, 1],
       extrapolate: "clamp",
     });
@@ -134,8 +134,14 @@ const ExpensesScreen = () => {
 
   const renderForeground = () => {
     const opacity = scroll.interpolate({
-      inputRange: [0, 20, 40],
+      inputRange: [0, 5, 10],
       outputRange: [1, 1, 0],
+      extrapolate: "clamp",
+    });
+
+    const fontSize = scroll.interpolate({
+      inputRange: [0, 40],
+      outputRange: [30, 0],
       extrapolate: "clamp",
     });
 
@@ -145,15 +151,15 @@ const ExpensesScreen = () => {
       userBalanceText = (
         <>
           <Text style={styles.message} appearance="hint">
-                Your balance:
-              </Text>
+            Your balance:
+          </Text>
           <Text
             appearance="hint"
             style={[styles.message, { marginLeft: 5 }]}
             status={
               userBalance < 0 ? "danger" : "success"
             }>{`${userBalance.toLocaleString("en")}₪`}</Text>
-          </>
+        </>
       );
     }
 
@@ -212,7 +218,7 @@ const ExpensesScreen = () => {
         tabTextContainerActiveStyle={styles.tabTextContainerActiveStyle}
         tabsWrapperStyle={styles.tabsWrapper}
         tabsContainerBackgroundColor={theme["background-basic-color-1"]}
-        parallaxHeight={100}
+        parallaxHeight={70}
         headerHeight={80}
         onChangeTab={({ i }) => {
           setSelectedKumunaIndex(i);
@@ -239,7 +245,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 20,
-    paddingBottom: 40,
+    justifyContent: "flex-start",
   },
   message: {
     fontSize: 20,
@@ -247,6 +253,7 @@ const styles = StyleSheet.create({
   },
   stickyHeaederTitle: {
     fontSize: 30,
+    color: "#fafafa",
   },
   headerWrapper: {
     width: "100%",
