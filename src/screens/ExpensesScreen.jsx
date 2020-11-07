@@ -18,6 +18,17 @@ import {
 import Toast from "react-native-toast-message";
 import StickyParallaxHeader from "react-native-sticky-parallax-header";
 
+const nothingToShowYet = (
+  <Layout>
+    <Text style={{ textAlign: "center" }} category="h5">
+      Nothing to show yet 🐣
+    </Text>
+    <Text style={{ textAlign: "center" }} category="h6">
+      Pull to refresh
+    </Text>
+  </Layout>
+);
+
 const populateKumunaThumbnail = async (kumuna) => {
   if (kumuna.thumbnailUrl) {
     let thumbnailBase64 = await backendService.downloadImage(
@@ -37,11 +48,20 @@ const ExpensesScreen = () => {
   const [topReached, setTopReached] = useState(true);
   const [stickyHeaderEndReached, setStickyHeaderEndReached] = useState(false);
   const [stickyHeaderTopReached, setStickyHeaderTopReached] = useState(true);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const [selectedKumunaIndex, setSelectedKumunaIndex] = useState(0);
   const [userBalance, setUserBalance] = useState(0);
 
   const getKumunasTabs = () => {
+
+    if (kumunas.length === 0) {
+      return [
+        {
+          title: null,
+          content: nothingToShowYet,
+        },
+      ];
+    }
 
     const kumunasTabs = [];
     for (let i = 0; i < kumunas.length; i++) {
@@ -73,6 +93,10 @@ const ExpensesScreen = () => {
   const loadKumunas = async () => {
     try {
       let rawKumunas = await backendService.getKumunas();
+      if (rawKumunas.length === 0) {
+        setLoading(false);
+        return;
+      }
       let kumunas = await Promise.all(rawKumunas.map(populateKumunaThumbnail));
       setKumunas(kumunas);
     } catch (e) {}
@@ -139,12 +163,6 @@ const ExpensesScreen = () => {
       extrapolate: "clamp",
     });
 
-    const fontSize = scroll.interpolate({
-      inputRange: [0, 40],
-      outputRange: [30, 0],
-      extrapolate: "clamp",
-    });
-
     let kumuna = kumunas[selectedKumunaIndex];
     let userBalanceText = <Spinner size="tiny" status="basic" />;
     if (userBalance || userBalance === 0) {
@@ -161,6 +179,8 @@ const ExpensesScreen = () => {
             }>{`${userBalance.toLocaleString("en")}₪`}</Text>
         </>
       );
+    } else if (!isLoading) {
+      userBalanceText = <></>;
     }
 
     return (
@@ -210,6 +230,7 @@ const ExpensesScreen = () => {
             onRefresh={refreshSelectedKumunaData}
           />
         }
+        tabsContainerStyle={{ width: "100%" }}
         header={renderHeader()}
         foreground={renderForeground()}
         headerSize={() => {}}
