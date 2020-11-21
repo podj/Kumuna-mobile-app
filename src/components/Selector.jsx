@@ -1,16 +1,27 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 import { Select, List, ListItem, useTheme } from "@ui-kitten/components";
 
-const Selector = ({ data, label, value, textValue, onValueChange, multiSelect }) => {
+const Selector = (props) => {
+  const {
+    data,
+    label,
+    value,
+    toString,
+    onValueChange,
+    multiSelect,
+    onBlur,
+  } = props;
   const theme = useTheme();
 
   const [showList, setShowList] = useState(false);
 
   const handlePressOut = (item) => {
+    console.log("value", value);
+    console.log("textValue", toString(item));
     if (!multiSelect) {
-      onValueChange(item.name);
+      onValueChange(item ? item : null);
       setShowList(false);
     } else {
       if (value.some((i) => i.id === item.id)) {
@@ -28,8 +39,8 @@ const Selector = ({ data, label, value, textValue, onValueChange, multiSelect })
         onPress={() => handlePressOut(item)}
         style={{
           backgroundColor: value.some((i) => i.id === item.id)
-            ? theme['background-basic-color-3']
-            : theme['background-basic-color-1'],
+            ? theme["background-basic-color-3"]
+            : theme["background-basic-color-1"],
         }}
       />
     ) : (
@@ -38,21 +49,27 @@ const Selector = ({ data, label, value, textValue, onValueChange, multiSelect })
   };
 
   return (
-    <View>
+    <View style={[props.style, styles.container]}>
       <Select
         label={label}
-        value={multiSelect ? textValue : value}
+        value={toString(value)}
+        // onBlur={onBlur}
         onPressIn={() => setShowList(!showList)}
+        placeholder={
+          multiSelect ? "Select at least one option" : "Select one option"
+        }
+        style={{ zIndex: 0 }}
+        status={props.status}
+        caption={props.caption}
       />
-      <List
-        data={data}
-        renderItem={renderListItem}
+      <View
         style={{
           ...styles.list,
           display: showList ? "flex" : "none",
           height: showList ? null : 0,
-        }}
-      />
+        }}>
+        <List data={data} renderItem={renderListItem} bounces={false} />
+      </View>
     </View>
   );
 };
@@ -65,6 +82,6 @@ const styles = StyleSheet.create({
     top: 60,
     right: 0,
     width: "100%",
-    zIndex: 100,
+    maxHeight: 120,
   },
 });

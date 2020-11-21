@@ -24,7 +24,7 @@ export default function (props) {
   const { user } = useContext(AuthContext);
   const [kumunaMembers, setKumunaMembers] = useState(null);
   const [expenses, setExpenses] = useState(null);
-  const _scrollView = useRef(null);
+  const _scrollView = useRef(null); // I swear to god I don't remember why that line is here. But removing it breaks things although it's not used. So...
 
   const populateDebtorsAndCreditor = (item) => {
     const expense = item.item;
@@ -50,9 +50,7 @@ export default function (props) {
         });
       })
       .finally(() => {
-        
         props.onDoneLoading();
-      ;
       });
   };
 
@@ -77,10 +75,10 @@ export default function (props) {
     return (
       <Layout
         style={{
-             flex: 1,
-             alignItems: "center",
-             justifyContent: "center",
-             paddingTop: 20,
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          paddingTop: 20,
         }}>
         <Spinner status="basic" size="giant" />
       </Layout>

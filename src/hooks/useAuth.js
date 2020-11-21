@@ -8,12 +8,13 @@ import * as backendService from "../services/backendService";
 import { AuthContext } from "../contexts/AuthProvider";
 
 const useAuth = () => {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, setLoading } = useContext(AuthContext);
 
   const handleAuthStateChange = (user) => {
     if (!user) {
       axios.defaults.headers.common["Authorization"] = undefined;
       setUser(user);
+      setLoading(false);
       return;
     }
 
@@ -22,6 +23,7 @@ const useAuth = () => {
       let appUser = await backendService.getCurrentUser();
       user.appUser = appUser;
       setUser(user);
+      setLoading(false);
     });
   };
 

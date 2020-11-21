@@ -54,6 +54,8 @@ const RegistrationScreen = ({ navigation }) => {
                 <Input
                   label="Email Address"
                   value={values.email}
+                  keyboardType="email-address"
+                  returnKeyType="done"
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
                   status={!isValid && errors.email ? "danger" : "basic"}
@@ -64,6 +66,7 @@ const RegistrationScreen = ({ navigation }) => {
                 <Input
                   label="Name"
                   value={values.name}
+                  returnKeyType="done"
                   onChangeText={handleChange("name")}
                   onBlur={handleBlur("name")}
                   status={!isValid && errors.name ? "danger" : "basic"}
@@ -74,6 +77,7 @@ const RegistrationScreen = ({ navigation }) => {
                 <Input
                   label="Password"
                   value={values.password}
+                  returnKeyType="done"
                   onChangeText={handleChange("password")}
                   onBlur={handleBlur("password")}
                   secureTextEntry={true}
@@ -90,8 +94,7 @@ const RegistrationScreen = ({ navigation }) => {
                     loading
                       ? () => <Spinner status="basic" size="tiny" />
                       : null
-                  }
-                >
+                  }>
                   Register
                 </Button>
 
@@ -99,8 +102,7 @@ const RegistrationScreen = ({ navigation }) => {
                   appearance="ghost"
                   status="basic"
                   disabled={loading}
-                  onPress={() => navigation.navigate("Login")}
-                >
+                  onPress={() => navigation.navigate("Login")}>
                   or login
                 </Button>
               </Layout>

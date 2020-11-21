@@ -1,103 +1,158 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { StyleSheet, View } from "react-native";
-import { Input } from "@ui-kitten/components";
+import { Button, Input, Text } from "@ui-kitten/components";
 import Selector from "./Selector";
 
-import { useFormik } from "formik";
+import { Formik, useFormik } from "formik";
+import * as yup from "yup";
 
-// import AutoComplete from "./AutoComplete";
+import * as backendService from "../services/backendService";
+import Toast from "react-native-toast-message";
 
 const values = [
   { id: "Devin", name: "Devin" },
   { id: "Dan", name: "Dan" },
   { id: "Dominic", name: "Dominic" },
-  // { id: "Jackson", name: "Jackson" },
-  // { id: "James", name: "James" },
-  // { id: "Joel", name: "Joel" },
-  // { id: "John", name: "John" },
-  // { id: "Jillian", name: "Jillian" },
-  // { id: "Jimmy", name: "Jimmy" },
-  // { id: "Julie", name: "Julie" },
-  // { id: "Devin2", name: "Devin2" },
-  // { id: "Dan2", name: "Dan2" },
-  // { id: "Dominic2", name: "Dominic2" },
-  // { id: "Jackson2", name: "Jackson2" },
-  // { id: "James2", name: "James2" },
-  // { id: "Joel2", name: "Joel2" },
-  // { id: "John2", name: "John2" },
-  // { id: "Jillian2", name: "Jillian2" },
-  // { id: "Jimmy2", name: "Jimmy2" },
-  // { id: "Julie2", name: "Julie2" },
+  { id: "Jackson", name: "Jackson" },
+  { id: "James", name: "James" },
+  { id: "Joel", name: "Joel" },
+  { id: "John", name: "John" },
+  { id: "Jillian", name: "Jillian" },
+  { id: "Jimmy", name: "Jimmy" },
+  { id: "Julie", name: "Julie" },
+  { id: "Devin2", name: "Devin2" },
+  { id: "Dan2", name: "Dan2" },
+  { id: "Dominic2", name: "Dominic2" },
+  { id: "Jackson2", name: "Jackson2" },
 ];
 
-const items = [
-  { label: "itachi", value: "1" },
-  { label: "kakashi", value: "2" },
-  { label: "madara", value: "3" },
-  { label: "menato", value: "4" },
-  { label: "naruto", value: "5" },
-  { label: "hinata", value: "6" },
-  { label: "jiraya", value: "7" },
-  { label: "tsunade", value: "8" },
-  { label: "naruto", value: "9" },
-  { label: "sasuke", value: "10" },
-  { label: "hashirama", value: "11" },
-  { label: "tobirama", value: "12" },
-  { label: "pain", value: "13" },
-  { label: "sarada", value: "14" },
-  { label: "sakura", value: "15" },
-  { label: "asura", value: "16" },
-  { label: "indra", value: "17" },
-];
 
-const AddExpenseForm = () => {
-  const formik = useFormik({
+const AddExpenseForm = ({ kumuna }) => {
+  const [kumunaMembers, setKumunaMembers] = useState([]);
+
+
+  const formikConfig = {
     initialValues: {
       name: "",
-      creditor: "",
+      creditor: null,
+      debtors: [],
+      amount: null,
     },
+    validationSchema: yup.object().shape({
+      name: yup.string().required(),
+      // creditor: yup.string().min(1).required(),
+      debtors: yup.array().min(1).required(),
+      amount: yup.number().positive().required().typeError("you must specify a number"),
+    }),
     onSubmit: (values) => console.log("values", values),
-  });
+  };
 
-  const [debtors, setDebtors] = useState([]);
+  const loadKumunaMembers = async () => {
+    try {
+      const kumunaMembers = await backendService.getKumunaMembers(kumuna.id);
+      kumunaMembers.map((member) => {
+        member.name = member.displayName;
+        return member;
+      });
+      setKumunaMembers(kumunaMembers);
+    } catch (e) {
+      Toast.show({"text1": "Oops", "text2": "Something went wrong", "status": "danger",})
+    }
+    
+  };
 
-  const getDebtorsValue = () => {
-    return debtors.reduce((acc, curr, index) => {
-      console.log('curr', curr);
-      return index === 0 ? acc + curr.name : acc + ", " + curr.name
-    }, "");
-  }
+  useEffect(() => {
+    loadKumunaMembers();
+  }, []);
+
+  const getDebtorsValue = (debtors) => {
+    let finalDebtors = null;
+    console.log("debtors before reduce", debtors);
+    if (debtors && debtors.length > 0) {
+      finalDebtors = debtors.reduce((acc, curr, index) =>
+        index === 0 ? acc + curr.name : acc + ", " + curr.name
+      );
+    }
+    finalDebtors = finalDebtors || "";
+    console.log("debtors after reduce", debtors);
+    return finalDebtors;
+  };
 
   return (
     <View style={styles.container}>
-      <Input
-        label="Name"
-        value={formik.values.name}
-        onChangeText={formik.handleChange("name")}
-        onBlur={formik.handleBlur("name")}
-        style={styles.input}
-      />
+      <Text category="h6" style={{ textAlign: "center" }}>
+        Add expense to {kumuna.name}
+      </Text>
+      <Formik
+        validationSchema={formikConfig.validationSchema}
+        initialValues={formikConfig.initialValues}
+        onSubmit={formikConfig.onSubmit}>
+        {({
+          isValid,
+          errors,
+          values,
+          handleSubmit,
+          handleBlur,
+          handleChange,
+        }) => (
+          <>
+            <Input
+              label="Name"
+              returnKeyType="done"
+              value={values.name}
+              onChangeText={handleChange("name")}
+              onBlur={handleBlur("name")}
+              style={styles.input}
+              status={!isValid && errors.name ? "danger" : "basic"}
+              caption={!isValid && errors.name ? errors.name : ""}
+            />
 
-      <Selector
-        label={"Creditor"}
-        data={values}
-        value={formik.values.creditor}
-        onValueChange={formik.handleChange("creditor")}
-        multiSelect={false}
-      />
+            <Selector
+              label="Who paid"
+              data={kumunaMembers}
+              value={values.creditor}
+              toString={(val) => val ? val.name : ""}
+              onBlur={handleBlur("creditor")}
+              onValueChange={handleChange("creditor")}
+              multiSelect={false}
+              style={[styles.input, { zIndex: 2 }]}
+              status={!isValid && errors.creditor ? "danger" : "basic"}
+              caption={!isValid && errors.creditor ? errors.creditor : ""}
+            />
 
-      <Selector
-        label={"Debtors"}
-        data={values}
-        value={debtors}
-        textValue={getDebtorsValue()}
-        onValueChange={setDebtors}
-        multiSelect={true}
-      />
+            <Selector
+              label="Splits between"
+              data={kumunaMembers}
+              onBlur={handleBlur("debtors")}
+              onValueChange={handleChange("debtors")}
+              value={values.debtors}
+              toString={getDebtorsValue}
+              multiSelect={true}
+              style={[styles.input, { zIndex: 1 }]}
+              status={!isValid && errors.debtors ? "danger" : "basic"}
+              caption={!isValid && errors.debtors ? errors.debtors : ""}
+            />
 
-      {/* <Text>{getDebtorsValue()}</Text> */}
-
+            <Input
+              label="Amount"
+              returnKeyType="done"
+              keyboardType="number-pad"
+              value={values.amount}
+              style={styles.input}
+              onChangeText={handleChange("amount")}
+              onBlur={handleBlur("amount")}
+              status={!isValid && errors.amount ? "danger" : "basic"}
+              caption={!isValid && errors.amount ? errors.amount : ""}
+            />
+            <Button
+              style={[styles.input, styles.button]}
+              onPress={handleSubmit}>
+              Add
+            </Button>
+          </>
+        )}
+      </Formik>
     </View>
   );
 };
@@ -107,5 +162,13 @@ export default AddExpenseForm;
 const styles = StyleSheet.create({
   container: {
     height: "100%",
+    marginTop: 20,
+  },
+  input: {
+    marginTop: 25,
+  },
+  button: {
+    width: "50%",
+    alignSelf: "center",
   },
 });

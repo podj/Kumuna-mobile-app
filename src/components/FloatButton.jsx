@@ -3,9 +3,10 @@ import { StyleSheet } from "react-native";
 
 import { Button, Icon } from "@ui-kitten/components";
 
-const FloatButton = ({ onPress, icon, style }) => {
+const FloatButton = ({ onPress, icon, style, disabled = false }) => {
   return (
     <Button
+      disabled={disabled}
       onPress={onPress}
       style={[styles.floatButton, style]}
       accessoryLeft={

@@ -18,8 +18,7 @@ const AppNavigator = () => {
       <AppStack.Navigator
         screenOptions={{
           headerShown: false,
-        }}
-      >
+        }}>
         {user ? (
           <AppStack.Screen name="BottomStack" component={BottomNavigator} />
         ) : (

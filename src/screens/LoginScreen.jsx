@@ -46,6 +46,8 @@ const LoginScreen = ({ navigation }) => {
 
                 <Input
                   label="Email Address"
+                  keyboardType="email-address"
+                  returnKeyType="done"
                   value={values.email}
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
@@ -57,6 +59,7 @@ const LoginScreen = ({ navigation }) => {
                 <Input
                   label="Password"
                   value={values.password}
+                  returnKeyType="done"
                   onChangeText={handleChange("password")}
                   onBlur={handleBlur("password")}
                   secureTextEntry={true}
@@ -68,8 +71,7 @@ const LoginScreen = ({ navigation }) => {
                 <Button
                   onPress={handleSubmit}
                   disabled={!isValid}
-                  style={styles.submitButton}
-                >
+                  style={styles.submitButton}>
                   {loading ? <Spinner status="basic" size="tiny" /> : "Sign In"}
                 </Button>
 
@@ -77,8 +79,7 @@ const LoginScreen = ({ navigation }) => {
                   appearance="ghost"
                   status="basic"
                   disabled={loading}
-                  onPress={() => navigation.navigate("Registration")}
-                >
+                  onPress={() => navigation.navigate("Registration")}>
                   or register
                 </Button>
               </Layout>

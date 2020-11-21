@@ -8,14 +8,11 @@ import { Layout, Spinner, Text, useTheme } from "@ui-kitten/components";
 import * as backendService from "../services/backendService";
 import {
   Animated,
-  Image,
-  ActivityIndicator,
   Platform,
   RefreshControl,
   StyleSheet,
   View,
 } from "react-native";
-import Toast from "react-native-toast-message";
 import StickyParallaxHeader from "react-native-sticky-parallax-header";
 
 const nothingToShowYet = (
@@ -48,7 +45,8 @@ const ExpensesScreen = () => {
   const [topReached, setTopReached] = useState(true);
   const [stickyHeaderEndReached, setStickyHeaderEndReached] = useState(false);
   const [stickyHeaderTopReached, setStickyHeaderTopReached] = useState(true);
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
+  const [isLoadingData, setLoadingData] = useState(true);
   const [selectedKumunaIndex, setSelectedKumunaIndex] = useState(0);
   const [userBalance, setUserBalance] = useState(0);
 
@@ -79,8 +77,8 @@ const ExpensesScreen = () => {
                 Platform.OS == "andorind" ? true : shouldBeEnabled()
               }
               nestedScrollEnabled
-              shouldComponentUpdate={isLoading}
-              onDoneLoading={() => {setLoading(false)}}
+              shouldComponentUpdate={isLoadingData}
+              onDoneLoading={() => {}}
               kumunaId={kumuna.id}
             />
           </Layout>
@@ -94,7 +92,6 @@ const ExpensesScreen = () => {
     try {
       let rawKumunas = await backendService.getKumunas();
       if (rawKumunas.length === 0) {
-        setLoading(false);
         return;
       }
       let kumunas = await Promise.all(rawKumunas.map(populateKumunaThumbnail));
@@ -112,10 +109,12 @@ const ExpensesScreen = () => {
   };
 
   const refreshSelectedKumunaData = async () => {
-    setLoading(true);
+    setLoadingData(true);
+    setLoading(false);
     setUserBalance(null);
     await loadKumunas();
     await refreshUserBalance();
+    setLoadingData(false);
   };
 
   useEffect(() => {
@@ -179,7 +178,7 @@ const ExpensesScreen = () => {
             }>{`${userBalance.toLocaleString("en")}₪`}</Text>
         </>
       );
-    } else if (!isLoading) {
+    } else if (!isLoadingData && false) {
       userBalanceText = <></>;
     }
 
@@ -230,7 +229,12 @@ const ExpensesScreen = () => {
             onRefresh={refreshSelectedKumunaData}
           />
         }
-        tabsContainerStyle={{ width: "100%" }}
+        tabsContainerStyle={{    
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+            alignContent: "flex-start",
+            minWidth: "100%",
+        }}
         header={renderHeader()}
         foreground={renderForeground()}
         headerSize={() => {}}
@@ -250,9 +254,9 @@ const ExpensesScreen = () => {
           { useNativeDriver: false }
         )}
       />
-      <FloatButton onPress={() => setVisible(true)} style={{ right: 26 }} />
+      <FloatButton onPress={() => setVisible(true)} style={{ right: 26 }} disabled={isLoadingData} />
       <BottomModal visible={visible} onDismiss={() => setVisible(false)}>
-        <AddExpenseForm />
+        <AddExpenseForm kumuna={kumunas[selectedKumunaIndex]} />
       </BottomModal>
     </Layout>
   );
