@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import FloatButton from "../components/FloatButton";
 import KumunaExpensesList from "../components/KumunaExpensesList";
@@ -117,6 +117,11 @@ const ExpensesScreen = () => {
     setLoadingData(false);
   };
 
+  const expenseWasAdded = () => {
+    refreshSelectedKumunaData();
+    setVisible(false);
+  };
+
   useEffect(() => {
     refreshSelectedKumunaData();
   }, [selectedKumunaIndex]);
@@ -207,7 +212,7 @@ const ExpensesScreen = () => {
 
   const onScroll = ({ nativeEvent }) => {
     const { contentOffset, layoutMeasurement, contentSize } = nativeEvent;
-    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 20) {
+    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 5) {
       setEndReached(true);
       setTopReached(false);
     }
@@ -229,11 +234,11 @@ const ExpensesScreen = () => {
             onRefresh={refreshSelectedKumunaData}
           />
         }
-        tabsContainerStyle={{    
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-            alignContent: "flex-start",
-            minWidth: "100%",
+        tabsContainerStyle={{
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+          alignContent: "flex-start",
+          minWidth: "100%",
         }}
         header={renderHeader()}
         foreground={renderForeground()}
@@ -254,9 +259,16 @@ const ExpensesScreen = () => {
           { useNativeDriver: false }
         )}
       />
-      <FloatButton onPress={() => setVisible(true)} style={{ right: 26 }} disabled={isLoadingData} />
+      <FloatButton
+        onPress={() => setVisible(true)}
+        style={{ right: 26 }}
+        disabled={isLoadingData}
+      />
       <BottomModal visible={visible} onDismiss={() => setVisible(false)}>
-        <AddExpenseForm kumuna={kumunas[selectedKumunaIndex]} />
+        <AddExpenseForm
+          kumuna={kumunas[selectedKumunaIndex]}
+          onDone={expenseWasAdded}
+        />
       </BottomModal>
     </Layout>
   );

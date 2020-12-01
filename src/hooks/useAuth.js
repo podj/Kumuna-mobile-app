@@ -8,7 +8,7 @@ import * as backendService from "../services/backendService";
 import { AuthContext } from "../contexts/AuthProvider";
 
 const useAuth = () => {
-  const { user, setUser, setLoading } = useContext(AuthContext);
+  const { user, setUser, loading, setLoading } = useContext(AuthContext);
 
   const handleAuthStateChange = (user) => {
     if (!user) {
@@ -34,7 +34,7 @@ const useAuth = () => {
     return subscriber; // unsubscribe on unmount
   }, []);
 
-  return { user };
+  return { user, loading };
 };
 
 export default useAuth;

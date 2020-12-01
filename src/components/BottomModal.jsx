@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Modal,
   Dimensions,
   PanResponder,
   Animated,
-  TouchableOpacity,
-  View,
   Pressable,
   Easing,
 } from "react-native";
@@ -64,13 +62,11 @@ export default function (props) {
       animationType="fade"
       visible={visible}
       transparent
-      onRequestClose={dismiss}
-    >
+      onRequestClose={dismiss}>
       <Pressable style={styles.overlay} onPress={dismiss}>
         <Animated.View
           style={[styles.container, { top }]}
-          {...panResponders.panHandlers}
-        >
+          {...panResponders.panHandlers}>
           {children}
         </Animated.View>
       </Pressable>
@@ -91,5 +87,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 12,
     borderTopLeftRadius: 12,
     padding: 20,
+  },
+  absoluteContianer: {
+    position: "absolute",
   },
 });

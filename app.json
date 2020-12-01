@@ -18,10 +18,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "itamar"
+      "bundleIdentifier": "itamar",
+      "buildNumber": "0.0.1"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "android": {
+      "package": "com.podj.Kumuna"
+    }
   }
 }

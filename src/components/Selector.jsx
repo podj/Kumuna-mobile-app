@@ -1,25 +1,15 @@
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Keyboard, StyleSheet, View } from "react-native";
 
 import { Select, List, ListItem, useTheme } from "@ui-kitten/components";
 
 const Selector = (props) => {
-  const {
-    data,
-    label,
-    value,
-    toString,
-    onValueChange,
-    multiSelect,
-    onBlur,
-  } = props;
+  const { data, label, value, toString, onValueChange, multiSelect } = props;
   const theme = useTheme();
 
   const [showList, setShowList] = useState(false);
 
   const handlePressOut = (item) => {
-    console.log("value", value);
-    console.log("textValue", toString(item));
     if (!multiSelect) {
       onValueChange(item ? item : null);
       setShowList(false);
@@ -53,8 +43,13 @@ const Selector = (props) => {
       <Select
         label={label}
         value={toString(value)}
-        // onBlur={onBlur}
-        onPressIn={() => setShowList(!showList)}
+        onBlur={() => {
+          setShowList(false);
+        }}
+        onPressIn={() => {
+          setShowList(!showList);
+          Keyboard.dismiss();
+        }}
         placeholder={
           multiSelect ? "Select at least one option" : "Select one option"
         }

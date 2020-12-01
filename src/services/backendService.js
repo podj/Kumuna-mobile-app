@@ -1,7 +1,8 @@
 import * as axios from "axios";
 import { uploadImage } from "./firebaseService";
 
-axios.defaults.baseURL = "http://kumuna.herokuapp.com";
+axios.defaults.baseURL =
+  "http://kumunaapp-env.eba-p4xm5ys7.us-east-2.elasticbeanstalk.com";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 
@@ -92,6 +93,19 @@ export const getBalanceForKumunaId = async (kumunaId) => {
   const response = await axios.get(`/kumunas/${kumunaId}/self-summary`);
   if (response.status !== 200) {
     throw new Error("Failed to fetch self summary");
+  }
+
+  return response.data;
+};
+
+export const createExpense = async (expense) => {
+  const response = await axios.post(`/kumunas/${expense.kumunaId}/loans`, {
+    ...expense,
+  });
+  if (response.status !== 201) {
+    console.log("error!!!!!!!!");
+    console.error(response);
+    throw new Error("Failed to create expense");
   }
 
   return response.data;

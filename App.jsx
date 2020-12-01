@@ -5,7 +5,11 @@ I18nManager.allowRTL(false);
 
 import React from "react";
 
-import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
+import {
+  ApplicationProvider,
+  IconRegistry,
+  Layout,
+} from "@ui-kitten/components";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 
 import * as eva from "@eva-design/eva";

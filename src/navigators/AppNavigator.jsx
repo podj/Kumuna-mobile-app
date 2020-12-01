@@ -7,11 +7,12 @@ import AuthStackNavigator from "./AuthStackNavigator";
 import BottomNavigator from "./BottomNavigator";
 
 import useAuth from "../hooks/useAuth";
+import SplashScreen from "../components/SplashScreen";
 
 const AppStack = createStackNavigator();
 
 const AppNavigator = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   return (
     <NavigationContainer>
@@ -19,7 +20,9 @@ const AppNavigator = () => {
         screenOptions={{
           headerShown: false,
         }}>
-        {user ? (
+        {loading ? (
+          <AppStack.Screen name="Splash" component={SplashScreen} />
+        ) : user ? (
           <AppStack.Screen name="BottomStack" component={BottomNavigator} />
         ) : (
           <AppStack.Screen name="AuthStack" component={AuthStackNavigator} />
