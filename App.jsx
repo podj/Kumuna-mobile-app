@@ -33,21 +33,7 @@ const App = () => {
   });
 
     useEffect(() => {
-      AsyncAlert(
-        "Let's keep in touch!",
-        "We want to update you about important activities in your Kumunas"
-      );
       registerForPushNotifications();
-      isRegisteredForPushNotifications().then((isRegistered) => {
-        if (isRegistered) {
-          return;
-        }
-        AsyncAlert(
-          "Let's keep in touch!",
-          "We want to update you about important activities in your Kumunas"
-        );
-        registerForPushNotifications();
-      });
     }, []);
 
   if (!fontsLoaded) {

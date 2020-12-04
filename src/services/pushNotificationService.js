@@ -1,24 +1,29 @@
 import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import { Platform } from "react-native";
-import { updatePushNotificationToken } from "./backendService";
+import AsyncAlert from "../utils/AsyncAlert";
+import * as backendService from "./backendService";
+import Constants from "expo-constants";
 
 export const registerForPushNotifications = async () => {
   const { status: existingStatus } = await Permissions.getAsync(
     Permissions.NOTIFICATIONS
   );
   let finalStatus = existingStatus;
-  if (finalStatus !== "granted") {
+  if (finalStatus === "undetermined" && Constants.isDevice) {
+    AsyncAlert(
+      "Let's keep in touch!",
+      "We want to update you about important activities in your Kumunas"
+    );
     const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
     finalStatus = status;
   }
   if (finalStatus !== "granted") {
-    console.log("Failed to get push notifications permission");
     return;
   }
 
   const token = (await Notifications.getExpoPushTokenAsync()).data;
-  updatePushNotificationToken(token);
+  backendService.updatePushNotificationToken(token);
 
   if (Platform.OS == "android") {
     Notifications.setNotificationChannelAsync("default", {
