@@ -4,10 +4,11 @@ import { Keyboard, StyleSheet, View } from "react-native";
 import { Button, Input, Spinner, Text } from "@ui-kitten/components";
 import Selector from "./Selector";
 
-
 import * as yup from "yup";
 
 import * as backendService from "../services/backendService";
+import AsyncAlert from "../utils/AsyncAlert";
+import * as pushNotificationsServce from "../services/pushNotificationService";
 import Toast from "react-native-toast-message";
 import DatePicker from "./DatePicker";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -123,12 +124,17 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
     }
 
     createExpense(values, kumuna.id)
-      .then(() =>
+      .then(() => {
         Toast.show({
           text1: "Wow! That worked 😄",
           text2: "We are refreshing the page for you",
-        })
-      )
+        });
+        if (!pushNotificationsServce.isRegisteredForPushNotifications()) {
+          
+          AsyncAlert("Let's keep in touch", "We want to update you with new expenses in this Kumuna");
+          pushNotificationsServce.registerForPushNotifications();
+        }
+      })
       .catch((e) => {
         console.log(e);
         Toast.show({ text1: "Damn!", text2: "We messed up" });

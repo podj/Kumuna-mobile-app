@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1022513402751",
+    "firebase_url": "https://pipay-cd3f3.firebaseio.com",
+    "project_id": "pipay-cd3f3",
+    "storage_bucket": "pipay-cd3f3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022513402751:android:9c5818655cae63f40c004a",
+        "android_client_info": {
+          "package_name": "app.kumuna"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1022513402751-q5md281fks4qh2jt7k7fhs2hkvnl2a7l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6BfHkoBAnQeQLlJvWlg_2Yv9lGbSKF5U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1022513402751-q5md281fks4qh2jt7k7fhs2hkvnl2a7l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,7 +6,7 @@ const SplashScreen = () => {
   return (
     <Layout style={styles.container}>
       <Text style={styles.title}>Kumuna</Text>
-      <Spinner />
+      <Spinner status="basic" />
     </Layout>
   );
 };

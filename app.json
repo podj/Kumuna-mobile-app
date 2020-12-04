@@ -25,7 +25,9 @@
       "favicon": "./assets/favicon.png"
     },
     "android": {
-      "package": "com.podj.Kumuna"
+      "package": "app.kumuna",
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true
     }
   }
 }

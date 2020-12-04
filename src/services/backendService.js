@@ -1,8 +1,9 @@
 import * as axios from "axios";
 import { uploadImage } from "./firebaseService";
 
-axios.defaults.baseURL =
-  "http://kumunaapp-env.eba-p4xm5ys7.us-east-2.elasticbeanstalk.com";
+// axios.defaults.baseURL =
+//   "http://kumunaapp-env.eba-p4xm5ys7.us-east-2.elasticbeanstalk.com";
+axios.defaults.baseURL = "http://192.168.1.151:5000";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 
@@ -103,9 +104,21 @@ export const createExpense = async (expense) => {
     ...expense,
   });
   if (response.status !== 201) {
-    console.log("error!!!!!!!!");
     console.error(response);
     throw new Error("Failed to create expense");
+  }
+
+  return response.data;
+};
+
+export const updatePushNotificationToken = async (token) => {
+  const response = await axios.post("/users/me/push-notification-token", {
+    token,
+  });
+
+  if (response.status !== 200) {
+    console.error(response);
+    throw new Error("Failed to update push notification");
   }
 
   return response.data;
