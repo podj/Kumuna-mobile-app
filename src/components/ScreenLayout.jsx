@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { Layout, Text } from "@ui-kitten/components";
+import { Layout, Text, Button, Icon } from "@ui-kitten/components";
 
 export default function (props) {
   return (

@@ -123,3 +123,15 @@ export const updatePushNotificationToken = async (token) => {
 
   return response.data;
 };
+
+export const addMemberToKumuna = async (kumunaId, emailAddress, role) => {
+  try {
+    const response = await axios.post(`/kumunas/${kumunaId}/memberships`, {
+      emailAddress,
+      role,
+    });
+    return response.data;
+  } catch (e) {
+    throw new Error(e.response.data.message);
+  }
+};

@@ -55,8 +55,9 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
 
   const loadKumunaMembers = async () => {
     try {
-      const kumunaMembers = await backendService.getKumunaMembers(kumuna.id);
-      kumunaMembers.map((member) => {
+      let kumunaMembers = await backendService.getKumunaMembers(kumuna.id);
+      kumunaMembers = kumunaMembers.map((membership) => {
+        const member = membership.user;
         member.name = member.displayName;
         return member;
       });
@@ -65,7 +66,7 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
       Toast.show({
         text1: "Oops",
         text2: "Something went wrong",
-        status: "danger",
+        type: "error",
       });
     }
   };
@@ -137,7 +138,7 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
       })
       .catch((e) => {
         console.log(e);
-        Toast.show({ text1: "Damn!", text2: "We messed up" });
+        Toast.show({ text1: "Damn!", text2: "We messed up", type: "error" });
       });
   };
 

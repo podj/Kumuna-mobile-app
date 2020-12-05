@@ -21,12 +21,10 @@ import { default as mapping } from "./src/mapping.json";
 
 import { AuthProvider } from "./src/contexts/AuthProvider";
 import AppNavigator from "./src/navigators/AppNavigator";
-import {
-  registerForPushNotifications,
-  isRegisteredForPushNotifications,
-} from "./src/services/pushNotificationService";
-import AsyncAlert from "./src/utils/AsyncAlert";
-
+import { registerForPushNotifications } from "./src/services/pushNotificationService";
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+};
 const App = () => {
   const [fontsLoaded] = Font.useFonts({
     "Lato-Light": require("./assets/Lato-Light.ttf"),

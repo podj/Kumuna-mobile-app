@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity, Platform, StyleSheet, View } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Modal, Text } from "@ui-kitten/components";
+import { Text } from "@ui-kitten/components";
 
 export default class DatePicker extends React.Component {
   constructor(props) {

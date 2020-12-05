@@ -57,7 +57,7 @@ export default function (props) {
   const loadKumuna = async () => {
     const kumunaMembers = await backendService.getKumunaMembers(kumunaId);
     const memberIdToMember = kumunaMembers.reduce(
-      (members, member) => ((members[member.id] = member), members),
+      (members, member) => ((members[member.user.id] = member.user), members),
       {}
     );
     setKumunaMembers(memberIdToMember);
