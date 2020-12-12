@@ -7,8 +7,6 @@ import Selector from "./Selector";
 import * as yup from "yup";
 
 import * as backendService from "../services/backendService";
-import AsyncAlert from "../utils/AsyncAlert";
-import * as pushNotificationsServce from "../services/pushNotificationService";
 import Toast from "react-native-toast-message";
 import DatePicker from "./DatePicker";
 import { TouchableOpacity } from "react-native-gesture-handler";
