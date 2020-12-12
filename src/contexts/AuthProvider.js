@@ -10,19 +10,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  const login = async (email, password) => {
-    setLoading(true);
-
-    try {
-      await firebaseService.login(email, password);
-      setAuthError(null);
-    } catch (e) {
-      setAuthError(e.message);
-    }
-
-    setLoading(false);
-  };
-
   const register = async (email, displayName, password) => {
     setLoading(true);
 
@@ -59,7 +46,6 @@ export const AuthProvider = ({ children }) => {
         loading,
         setLoading,
         authError,
-        login,
         logout,
         register,
       }}>

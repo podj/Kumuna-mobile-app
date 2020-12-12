@@ -56,14 +56,15 @@ export default function ({ navigation }) {
         let kumunas = await Promise.all(data.map(populateKumunaThumbnail));
         setKumunas(kumunas);
       })
-      .catch(() =>
+      .catch((e) => {
+        console.log(e);
         Toast.show({
           text1: "Oops",
           text2: "Something went wrong",
           type: "error",
           position: "top",
-        })
-      )
+        });
+      })
       .finally(() => setLoading(false));
   };
 
@@ -72,18 +73,20 @@ export default function ({ navigation }) {
   }, []);
 
   return (
-    <ScreenLayout title="Kumunas">
-      <List
-        ListEmptyComponent={listPlaceholder}
-        onRefresh={loadKumunas}
-        refreshing={isLoading}
-        showsVerticalScrollIndicator={false}
-        data={kumunas}
-        renderItem={renderKumuna}
-        style={styles.kumunas}
-      />
+    <Layout style={{ flex: 1 }}>
+      <ScreenLayout title="Kumunas">
+        <List
+          ListEmptyComponent={listPlaceholder}
+          onRefresh={loadKumunas}
+          refreshing={isLoading}
+          showsVerticalScrollIndicator={false}
+          data={kumunas}
+          renderItem={renderKumuna}
+          style={styles.kumunas}
+        />
+      </ScreenLayout>
       <FloatButton onPress={() => navigation.navigate("AddKumunaScreen")} />
-    </ScreenLayout>
+    </Layout>
   );
 }
 

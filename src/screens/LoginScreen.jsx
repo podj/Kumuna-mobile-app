@@ -1,91 +1,118 @@
-import { Button, Input, Layout, Spinner, Text } from "@ui-kitten/components";
-import { Formik } from "formik";
-import React, { useContext } from "react";
+import React, { useState } from "react";
 import { StyleSheet } from "react-native";
+import { Button, Input, Layout, Spinner } from "@ui-kitten/components";
 import * as yup from "yup";
-import { AuthContext } from "../contexts/AuthProvider";
+import * as firebaseService from "../services/firebaseService";
 import ScreenLayout from "../components/ScreenLayout";
+import Toast from "react-native-toast-message";
 
-const LoginScreen = ({ navigation }) => {
-  const { login, loading, authError } = useContext(AuthContext);
+export default ({ navigation }) => {
+  const [isLoading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [values, setValues] = useState({
+    email: null,
+    password: null,
+  });
 
-  const formConfig = {
-    initialValues: {
-      email: "",
-      password: "",
-    },
-    validationSchema: yup.object().shape({
-      email: yup.string().email().required(),
-      password: yup.string().min(6).required(),
-    }),
+  const validations = {
+    email: yup.string().required().email().typeError("email is required"),
+    password: yup.string().required().min(6).typeError("password is required"),
+  };
+
+  const validateField = (fieldName) => {
+    const value = values[fieldName];
+    let error = null;
+    try {
+      validations[fieldName].validateSync(value);
+    } catch (e) {
+      error = e.errors[0];
+    } finally {
+      errors[fieldName] = error;
+      setErrors({ ...errors });
+    }
+
+    return !error;
+  };
+
+  const handleChange = (fieldName) => {
+    return (newVal) => {
+      values[fieldName] = newVal;
+      setValues({ ...values });
+      validateField(fieldName);
+    };
+  };
+
+  const validateForm = () => {
+    let isValid = true;
+    for (const [key, _] of Object.entries(values)) {
+      if (!validateField(key)) {
+        isValid = false;
+      }
+    }
+    return isValid;
+  };
+
+  const login = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await firebaseService.login(values.email, values.password);
+    } catch (e) {
+      Toast.show({
+        text1: "Something is not right 🙊",
+        text2: e.message,
+        type: "info",
+        position: "bottom",
+        visibilityTime: 6000,
+      });
+      setLoading(false);
+    }
   };
 
   return (
     <ScreenLayout title="Login">
       <Layout style={styles.container}>
-        <Formik
-          initialValues={formConfig.initialValues}
-          validationSchema={formConfig.validationSchema}
-          onSubmit={(values) => login(values.email, values.password)}
-        >
-          {({
-            values,
-            errors,
-            isValid,
-            handleBlur,
-            handleChange,
-            handleSubmit,
-          }) => {
-            return (
-              <Layout style={styles.form}>
-                {authError ? (
-                  <Text status="danger" style={styles.error}>
-                    {authError}
-                  </Text>
-                ) : null}
+        <Layout style={styles.form}>
+          <Input
+            label="Email Address"
+            keyboardType="email-address"
+            returnKeyType="done"
+            value={values.email}
+            onChangeText={handleChange("email")}
+            status={errors.email ? "danger" : "basic"}
+            caption={errors.email}
+            style={styles.input}
+          />
 
-                <Input
-                  label="Email Address"
-                  keyboardType="email-address"
-                  returnKeyType="done"
-                  value={values.email}
-                  onChangeText={handleChange("email")}
-                  onBlur={handleBlur("email")}
-                  status={!isValid && errors.email ? "danger" : "basic"}
-                  caption={!isValid && errors.email ? errors.email : ""}
-                  style={styles.input}
-                />
+          <Input
+            label="Password"
+            value={values.password}
+            returnKeyType="done"
+            onChangeText={handleChange("password")}
+            secureTextEntry={true}
+            status={errors.password ? "danger" : "basic"}
+            caption={errors.password ? errors.password : ""}
+            style={styles.input}
+          />
 
-                <Input
-                  label="Password"
-                  value={values.password}
-                  returnKeyType="done"
-                  onChangeText={handleChange("password")}
-                  onBlur={handleBlur("password")}
-                  secureTextEntry={true}
-                  status={!isValid && errors.password ? "danger" : "basic"}
-                  caption={!isValid && errors.password ? errors.password : ""}
-                  style={styles.input}
-                />
+          <Button
+            onPress={login}
+            disabled={isLoading}
+            style={styles.submitButton}>
+            {isLoading ? <Spinner status="basic" size="tiny" /> : "Sign In"}
+          </Button>
 
-                <Button
-                  onPress={handleSubmit}
-                  disabled={!isValid}
-                  style={styles.submitButton}>
-                  {loading ? <Spinner status="basic" size="tiny" /> : "Sign In"}
-                </Button>
-
-                <Button
-                  appearance="ghost"
-                  status="basic"
-                  disabled={loading}
-                  onPress={() => navigation.navigate("Registration")}>
-                  or register
-                </Button>
-              </Layout>
-            );
-          }}
-        </Formik>
+          <Button
+            appearance="ghost"
+            status="basic"
+            disabled={isLoading}
+            onPress={() => navigation.navigate("Registration")}>
+            or register
+          </Button>
+        </Layout>
       </Layout>
     </ScreenLayout>
   );
@@ -118,5 +145,3 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 });
-
-export default LoginScreen;

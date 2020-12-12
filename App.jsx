@@ -30,9 +30,9 @@ const App = () => {
     "Lato-Light": require("./assets/Lato-Light.ttf"),
   });
 
-    useEffect(() => {
-      registerForPushNotifications();
-    }, []);
+  useEffect(() => {
+    registerForPushNotifications();
+  }, []);
 
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;

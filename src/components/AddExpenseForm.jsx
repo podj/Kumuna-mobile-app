@@ -130,11 +130,6 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
           text1: "Wow! That worked 😄",
           text2: "We are refreshing the page for you",
         });
-        if (!pushNotificationsServce.isRegisteredForPushNotifications()) {
-          
-          AsyncAlert("Let's keep in touch", "We want to update you with new expenses in this Kumuna");
-          pushNotificationsServce.registerForPushNotifications();
-        }
       })
       .catch((e) => {
         console.log(e);

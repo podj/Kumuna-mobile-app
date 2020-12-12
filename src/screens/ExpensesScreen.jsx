@@ -260,8 +260,8 @@ const ExpensesScreen = () => {
         )}
       />
       <FloatButton
-        onPress={() => setVisible(true)}
         style={{ right: 26 }}
+        onPress={() => setVisible(true)}
         disabled={isLoadingData}
       />
       <BottomModal visible={visible} onDismiss={() => setVisible(false)}>

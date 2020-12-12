@@ -14,7 +14,7 @@ const FloatButton = ({
 }) => {
   let propBasedStyle = {};
   propBasedStyle[bottom ? "bottom" : "top"] = 20;
-  propBasedStyle[right ? "right" : "left"] = 6;
+  propBasedStyle[right ? "right" : "left"] = 26;
   propBasedStyle.backgroundColor = filled ? "#4dabf5" : "transparent";
 
   return (
