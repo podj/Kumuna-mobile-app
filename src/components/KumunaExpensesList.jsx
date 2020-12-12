@@ -67,7 +67,13 @@ export default function (props) {
     if (props.shouldComponentUpdate) {
       loadKumuna()
         .then(() => loadExpenses())
-        .catch(console.log);
+        .catch(() =>
+          Toast.show({
+            text1: "Oops",
+            text2: "We messed up, someone will get fired",
+            type: "error",
+          })
+        );
     }
   }, [props.shouldComponentUpdate]);
 

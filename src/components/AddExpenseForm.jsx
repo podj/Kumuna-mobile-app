@@ -10,6 +10,7 @@ import * as backendService from "../services/backendService";
 import Toast from "react-native-toast-message";
 import DatePicker from "./DatePicker";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { Field } from "formik";
 
 const AddExpenseForm = ({ kumuna, onDone }) => {
   const [isLoading, setLoading] = useState(false);
@@ -78,43 +79,48 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
   };
 
   const validateField = (fieldName, newVal) => {
-    let isValid = false;
+    let error = null;
     try {
       validationSchemes[fieldName].validateSync(newVal);
-      delete errors[fieldName];
-      isValid = true;
     } catch (e) {
-      errors[fieldName] = e.errors[0];
+      error = e.errors[0];
     }
-    setErrors({ ...errors });
 
-    return isValid;
+    return error;
   };
 
   const handleChange = (fieldName) => {
     return (newVal) => {
-      validateField(fieldName, newVal);
-      const newValues = { ...values };
-      newValues[fieldName] = newVal;
-      setValues(newValues);
+      const error = validateField(fieldName, newVal);
+      setValues({ ...values, [fieldName]: newVal });
+      setErrors({ ...errors, [fieldName]: error });
     };
   };
 
-  const submitForm = () => {
+  const validateForm = () => {
     let isValid = true;
-    for (const [key, value] of Object.entries(values)) {
-      if (!validateField(key, value)) {
-        isValid = false;
-      }
+    const errors = {};
+    for (const [fieldName, value] of Object.entries(values)) {
+      const error = validateField(fieldName, value);
+      errors[fieldName] = error;
+      isValid = isValid && !error;
     }
-    
+
+    setErrors(errors);
+
+    return isValid;
+  };
+
+  const submitForm = () => {
+    let isValid = validateForm();
+
     if (
       values.debtors.length === 1 &&
       values.debtors[0].id == values.creditor.id
     ) {
       errors["debtors"] = "you must add another debtor";
       errors["creditor"] = "creditor can't owe himself";
-      setErrors({...errors})
+      setErrors({ ...errors });
       isValid = false;
     }
 
@@ -130,7 +136,6 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
         });
       })
       .catch((e) => {
-        console.log(e);
         Toast.show({ text1: "Damn!", text2: "We messed up", type: "error" });
       });
   };

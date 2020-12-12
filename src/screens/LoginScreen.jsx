@@ -19,36 +19,35 @@ export default ({ navigation }) => {
     password: yup.string().required().min(6).typeError("password is required"),
   };
 
-  const validateField = (fieldName) => {
-    const value = values[fieldName];
+  const validateField = (fieldName, value) => {
     let error = null;
+    
     try {
       validations[fieldName].validateSync(value);
     } catch (e) {
       error = e.errors[0];
-    } finally {
-      errors[fieldName] = error;
-      setErrors({ ...errors });
     }
 
-    return !error;
+    return error;
   };
 
   const handleChange = (fieldName) => {
     return (newVal) => {
-      values[fieldName] = newVal;
-      setValues({ ...values });
-      validateField(fieldName);
+      setValues({ ...values, [fieldName]: newVal });
+      const error = validateField(fieldName, newVal);
+      setErrors({...errors, [fieldName]: error});
     };
   };
 
   const validateForm = () => {
     let isValid = true;
-    for (const [key, _] of Object.entries(values)) {
-      if (!validateField(key)) {
-        isValid = false;
-      }
+    const errors = {};
+    for (const [fieldName, value] of Object.entries(values)) {
+      const error = validateField(fieldName, value);
+      errors[fieldName] = error;
+      isValid = isValid && !error;
     }
+    setErrors(errors);
     return isValid;
   };
 

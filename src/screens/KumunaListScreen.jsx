@@ -57,7 +57,6 @@ export default function ({ navigation }) {
         setKumunas(kumunas);
       })
       .catch((e) => {
-        console.log(e);
         Toast.show({
           text1: "Oops",
           text2: "Something went wrong",

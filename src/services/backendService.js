@@ -8,17 +8,16 @@ axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 
 export const createUser = async (user) => {
-  const response = await axios.post("/users", {
-    displayName: user.displayName,
-    emailAddress: user.email,
-    password: user.password,
-  });
-
-  if (response.status !== 201) {
-    throw new Error("Failed to create user");
+  try {
+    const response = await axios.post("/users", {
+      displayName: user.displayName,
+      emailAddress: user.email,
+      password: user.password,
+    });
+    return response.data;
+  } catch (e) {
+    throw new Error(e.response.data.message);
   }
-
-  return response.data;
 };
 
 export const downloadImage = async (url) => {

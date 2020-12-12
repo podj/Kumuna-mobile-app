@@ -1,114 +1,143 @@
-import React, { useContext } from "react";
+import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 
-import { Formik } from "formik";
 import * as yup from "yup";
 
-import { Layout, Text, Input, Button, Spinner } from "@ui-kitten/components";
+import { Layout, Input, Button, Spinner } from "@ui-kitten/components";
+import * as firebaseService from "../services/firebaseService";
+import * as backendService from "../services/backendService";
 
-import { AuthContext } from "../contexts/AuthProvider";
 import ScreenLayout from "../components/ScreenLayout";
+import Toast from "react-native-toast-message";
 
 const RegistrationScreen = ({ navigation }) => {
-  const { register, loading, authError } = useContext(AuthContext);
+  const [isLoading, setLoading] = useState(false);
+  const [values, setValues] = useState({
+    email: null,
+    name: null,
+    password: null,
+  });
+  const [errors, setErrors] = useState({
+    email: "",
+    name: "",
+    password: "",
+  });
+  const validations = {
+    email: yup.string().required().email().typeError("email is required"),
+    name: yup.string().required().min(2).typeError("name is required"),
+    password: yup.string().required().min(6).typeError("password is required"),
+  };
 
-  const formConfig = {
-    initialValues: {
-      email: "",
-      name: "",
-      password: "",
-    },
-    validationSchema: yup.object().shape({
-      email: yup.string().email().required(),
-      name: yup.string().min(2).required(),
-      password: yup.string().min(6).required(),
-    }),
+  const validateField = (fieldName, newVal) => {
+    let error = null;
+
+    try {
+      validations[fieldName].validateSync(newVal);
+    } catch (e) {
+      error = e.errors[0];
+    }
+
+    return error;
+  };
+
+  const handleChange = (fieldName) => {
+    return (newVal) => {
+      setValues({ ...values, [fieldName]: newVal });
+      const error = validateField(fieldName, newVal);
+      setErrors({ ...errors, [fieldName]: error });
+    };
+  };
+
+  const validateForm = () => {
+    let isValid = true;
+    const errors = {};
+    for (const [fieldName, value] of Object.entries(values)) {
+      const error = validateField(fieldName, value);
+      isValid = isValid && !error;
+      errors[fieldName] = error;
+    }
+    setErrors(errors);
+    return isValid;
+  };
+
+  const register = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await backendService.createUser({
+        email: values.email,
+        password: values.email,
+        displayName: values.name,
+      });
+      await firebaseService.login(values.email, values.password);
+    } catch (e) {
+      Toast.show({
+        text1: "Oops 🙊",
+        text2: e.message || "Something went wrong",
+        type: "error",
+        position: "bottom",
+      });
+      setLoading(false);
+    }
   };
 
   return (
     <ScreenLayout title="Let's get started">
       <Layout style={styles.container}>
-        <Formik
-          initialValues={formConfig.initialValues}
-          validationSchema={formConfig.validationSchema}
-          onSubmit={(values) =>
-            register(values.email, values.name, values.password)
-          }
-        >
-          {({
-            values,
-            errors,
-            isValid,
-            handleBlur,
-            handleChange,
-            handleSubmit,
-          }) => {
-            return (
-              <Layout style={styles.form}>
-                {authError ? (
-                  <Text status="danger" style={styles.error}>
-                    {authError}
-                  </Text>
-                ) : null}
+        <Layout style={styles.form}>
+          <Input
+            label="Email Address"
+            value={values.email}
+            keyboardType="email-address"
+            returnKeyType="done"
+            onChangeText={handleChange("email")}
+            status={errors.email ? "danger" : "basic"}
+            caption={errors.email ? errors.email : ""}
+            style={styles.input}
+          />
 
-                <Input
-                  label="Email Address"
-                  value={values.email}
-                  keyboardType="email-address"
-                  returnKeyType="done"
-                  onChangeText={handleChange("email")}
-                  onBlur={handleBlur("email")}
-                  status={!isValid && errors.email ? "danger" : "basic"}
-                  caption={!isValid && errors.email ? errors.email : ""}
-                  style={styles.input}
-                />
+          <Input
+            label="Name"
+            value={values.name}
+            returnKeyType="done"
+            onChangeText={handleChange("name")}
+            status={errors.name ? "danger" : "basic"}
+            caption={errors.name ? errors.name : ""}
+            style={styles.input}
+          />
 
-                <Input
-                  label="Name"
-                  value={values.name}
-                  returnKeyType="done"
-                  onChangeText={handleChange("name")}
-                  onBlur={handleBlur("name")}
-                  status={!isValid && errors.name ? "danger" : "basic"}
-                  caption={!isValid && errors.name ? errors.name : ""}
-                  style={styles.input}
-                />
+          <Input
+            label="Password"
+            value={values.password}
+            returnKeyType="done"
+            onChangeText={handleChange("password")}
+            secureTextEntry={true}
+            status={errors.password ? "danger" : "basic"}
+            caption={errors.password ? errors.password : ""}
+            style={styles.input}
+          />
 
-                <Input
-                  label="Password"
-                  value={values.password}
-                  returnKeyType="done"
-                  onChangeText={handleChange("password")}
-                  onBlur={handleBlur("password")}
-                  secureTextEntry={true}
-                  status={!isValid && errors.password ? "danger" : "basic"}
-                  caption={!isValid && errors.password ? errors.password : ""}
-                  style={styles.input}
-                />
+          <Button
+            onPress={register}
+            disabled={isLoading}
+            style={styles.submitButton}
+            accessoryLeft={
+              isLoading ? () => <Spinner status="basic" size="tiny" /> : null
+            }>
+            Register
+          </Button>
 
-                <Button
-                  onPress={handleSubmit}
-                  disabled={!isValid}
-                  style={styles.submitButton}
-                  accessoryLeft={
-                    loading
-                      ? () => <Spinner status="basic" size="tiny" />
-                      : null
-                  }>
-                  Register
-                </Button>
-
-                <Button
-                  appearance="ghost"
-                  status="basic"
-                  disabled={loading}
-                  onPress={() => navigation.navigate("Login")}>
-                  or login
-                </Button>
-              </Layout>
-            );
-          }}
-        </Formik>
+          <Button
+            appearance="ghost"
+            status="basic"
+            disabled={isLoading}
+            onPress={() => navigation.navigate("Login")}>
+            or login
+          </Button>
+        </Layout>
       </Layout>
     </ScreenLayout>
   );
