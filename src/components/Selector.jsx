@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import { Keyboard, StyleSheet, View } from "react-native";
+import { Keyboard, Platform, StyleSheet, View } from "react-native";
 
-import { Select, List, ListItem, useTheme } from "@ui-kitten/components";
+import {
+  Select,
+  List,
+  ListItem,
+  useTheme,
+  Radio,
+  Button,
+} from "@ui-kitten/components";
 
 const Selector = (props) => {
   const { data, label, value, toString, onValueChange, multiSelect } = props;
@@ -23,15 +30,17 @@ const Selector = (props) => {
   };
 
   const renderListItem = ({ item }) => {
+    const isChecked = multiSelect && value.some((i) => i.id === item.id);
     return multiSelect ? (
       <ListItem
         title={item.name}
         onPress={() => handlePressOut(item)}
         style={{
-          backgroundColor: value.some((i) => i.id === item.id)
+          backgroundColor: isChecked
             ? theme["background-basic-color-3"]
             : theme["background-basic-color-1"],
         }}
+        accessoryLeft={() => <Radio checked={isChecked} />}
       />
     ) : (
       <ListItem title={item.name} onPress={() => handlePressOut(item)} />
@@ -39,7 +48,7 @@ const Selector = (props) => {
   };
 
   return (
-    <View style={[props.style, styles.container]}>
+    <View style={[props.style]}>
       <Select
         label={label}
         value={toString(value)}
@@ -53,7 +62,6 @@ const Selector = (props) => {
         placeholder={
           multiSelect ? "Select at least one option" : "Select one option"
         }
-        style={{ zIndex: 0 }}
         status={props.status}
         caption={props.caption}
       />
@@ -73,8 +81,8 @@ export default Selector;
 
 const styles = StyleSheet.create({
   list: {
-    position: "absolute",
-    top: 60,
+    position: Platform.OS == "ios" ? "absolute" : "relative",
+    top: Platform.OS == "ios" ? 60 : 0,
     right: 0,
     width: "100%",
     maxHeight: 120,

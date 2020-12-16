@@ -5,7 +5,6 @@ import { Button, Input, Spinner, Text } from "@ui-kitten/components";
 import Selector from "./Selector";
 import { registerForPushNotifications } from "../services/pushNotificationService";
 
-
 import * as yup from "yup";
 
 import * as backendService from "../services/backendService";
