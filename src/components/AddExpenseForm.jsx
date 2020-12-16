@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Keyboard, StyleSheet, View } from "react-native";
 import { Button, Input, Spinner, Text } from "@ui-kitten/components";
 import Selector from "./Selector";
+import { registerForPushNotifications } from "../services/pushNotificationService";
+
 
 import * as yup from "yup";
 
@@ -10,7 +12,6 @@ import * as backendService from "../services/backendService";
 import Toast from "react-native-toast-message";
 import DatePicker from "./DatePicker";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Field } from "formik";
 
 const AddExpenseForm = ({ kumuna, onDone }) => {
   const [isLoading, setLoading] = useState(false);
@@ -134,6 +135,7 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
           text1: "Wow! That worked 😄",
           text2: "We are refreshing the page for you",
         });
+        registerForPushNotifications();
       })
       .catch((e) => {
         Toast.show({ text1: "Damn!", text2: "We messed up", type: "error" });

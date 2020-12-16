@@ -1,9 +1,8 @@
 import * as axios from "axios";
 import { uploadImage } from "./firebaseService";
 
-// axios.defaults.baseURL =
-//   "http://kumunaapp-env.eba-p4xm5ys7.us-east-2.elasticbeanstalk.com";
-axios.defaults.baseURL = "http://192.168.1.151:5000";
+axios.defaults.baseURL =
+  "http://kumunaapp-env.eba-p4xm5ys7.us-east-2.elasticbeanstalk.com";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 

@@ -69,7 +69,7 @@ const RegistrationScreen = ({ navigation }) => {
     try {
       await backendService.createUser({
         email: values.email,
-        password: values.email,
+        password: values.password,
         displayName: values.name,
       });
       await firebaseService.login(values.email, values.password);

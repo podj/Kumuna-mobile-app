@@ -51,7 +51,6 @@ const ExpensesScreen = () => {
   const [userBalance, setUserBalance] = useState(0);
 
   const getKumunasTabs = () => {
-
     if (kumunas.length === 0) {
       return [
         {

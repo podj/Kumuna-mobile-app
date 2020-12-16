@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -6,30 +6,18 @@ import { createStackNavigator } from "@react-navigation/stack";
 import AuthStackNavigator from "./AuthStackNavigator";
 import BottomNavigator from "./BottomNavigator";
 
-import useAuth from "../hooks/useAuth";
-import SplashScreen from "../components/SplashScreen";
+import { inject, observer } from "mobx-react";
 
 const AppStack = createStackNavigator();
 
-const AppNavigator = () => {
-  const { user, loading } = useAuth();
+const AppNavigator = ({ authStore }) => {
+  const { isLoggedIn } = authStore;
 
   return (
     <NavigationContainer>
-      <AppStack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}>
-        {loading ? (
-          <AppStack.Screen name="Splash" component={SplashScreen} />
-        ) : user ? (
-          <AppStack.Screen name="BottomStack" component={BottomNavigator} />
-        ) : (
-          <AppStack.Screen name="AuthStack" component={AuthStackNavigator} />
-        )}
-      </AppStack.Navigator>
+      {isLoggedIn ? <BottomNavigator /> : <AuthStackNavigator />}
     </NavigationContainer>
   );
 };
 
-export default AppNavigator;
+export default inject("authStore")(observer(AppNavigator));

@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
 import { getKumunaExpenses } from "../services/backendService";
 import { Layout, Text, List, Spinner } from "@ui-kitten/components";
 import ExpenseItem from "./ExpenseItem";
 import * as backendService from "../services/backendService";
-import { AuthContext } from "../contexts/AuthProvider";
+import { inject, observer } from "mobx-react";
 
 
 const listPlaceholder = (
@@ -19,9 +19,9 @@ const listPlaceholder = (
   </Layout>
 );
 
-export default function (props) {
+const KumunaExpensesList = (props) => {
   const { kumunaId } = props;
-  const { user } = useContext(AuthContext);
+  const { user } = props.authStore;
   const [kumunaMembers, setKumunaMembers] = useState(null);
   const [expenses, setExpenses] = useState(null);
   const _scrollView = useRef(null); // I swear to god I don't remember why that line is here. But removing it breaks things although it's not used. So...
@@ -103,7 +103,7 @@ export default function (props) {
       style={styles.expenses}
     />
   );
-}
+};
 
 const styles = StyleSheet.create({
   expenses: {
@@ -112,3 +112,5 @@ const styles = StyleSheet.create({
     width: "100%",
   },
 });
+
+export default inject("authStore")(observer(KumunaExpensesList));
