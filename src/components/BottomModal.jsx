@@ -8,6 +8,7 @@ import {
   Pressable,
   Easing,
 } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function (props) {
   const { visible, children, onDismiss } = props;

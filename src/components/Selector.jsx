@@ -40,7 +40,9 @@ const Selector = (props) => {
             ? theme["background-basic-color-3"]
             : theme["background-basic-color-1"],
         }}
-        accessoryLeft={() => <Radio checked={isChecked} />}
+        accessoryLeft={() => (
+          <Radio checked={isChecked} onChange={() => handlePressOut(item)} />
+        )}
       />
     ) : (
       <ListItem title={item.name} onPress={() => handlePressOut(item)} />

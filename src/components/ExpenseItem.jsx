@@ -4,7 +4,6 @@ import { StyleSheet } from "react-native";
 import { Layout, Text } from "@ui-kitten/components";
 import { getShortMonthName } from "../utils/DateUtils";
 
-
 export default ({ item }, userId) => {
   const lightGreen = "#66FF99";
   const lightRed = "#FF6699";
@@ -13,6 +12,20 @@ export default ({ item }, userId) => {
 
   item.createdTime = new Date(item.createdTime);
   item.date = new Date(item.date);
+
+  const getDebtorsNames = (debtors) => {
+    const names = debtors.map((d) => d.displayName);
+    const indexOfCurrentUser = debtors.map((d) => d.id).indexOf(userId);
+    if (indexOfCurrentUser !== -1) {
+      names.splice(indexOfCurrentUser, 1);
+      names.push("you");
+    }
+
+    const lastDebtorName = names.pop();
+    return (
+      (names.length > 0 ? names.join(", ") + " and " : "") + lastDebtorName
+    );
+  };
 
   return (
     <Layout style={styles.row}>
@@ -29,7 +42,7 @@ export default ({ item }, userId) => {
           ellipsizeMode="tail"
           numberOfLines={1}
           appearance="hint">
-          {item.debtors.map((d) => d.displayName).join(", ")} owe
+          {getDebtorsNames(item.debtors)} owe
           {item.debtors.length > 1 ? "" : "s"}{" "}
           {isDebt ? item.creditor.displayName : "you"}
         </Text>

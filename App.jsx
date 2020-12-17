@@ -21,6 +21,14 @@ import * as firebaseService from "./src/services/firebaseService";
 import * as backendService from "./src/services/backendService";
 import { Provider } from "mobx-react";
 import authStore from "./src/stores/AuthStore";
+import * as Sentry from "sentry-expo";
+
+Sentry.init({
+  dsn:
+    "https://1177cefcf1fb4755b95281e49361098f@o493127.ingest.sentry.io/5561611",
+  enableInExpoDevelopment: true,
+  debug: true, // Sentry will try to print out useful debugging information if something goes wrong with sending an event. Set this to `false` in production.
+});
 
 String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);

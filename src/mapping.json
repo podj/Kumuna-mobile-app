@@ -1,5 +1,8 @@
 {
   "strict": {
-    "text-font-family": "Lato-Light"
+    "text-font-family": "Lato-Light",
+    "text-paragraph-1-font-size": 16,
+    "text-subtitle-1-font-size": 16,
+    "text-label-font-size": 16
   }
 }

@@ -29,6 +29,18 @@
       "package": "app.kumuna",
       "googleServicesFile": "./google-services.json",
       "useNextNotificationsApi": true
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "podj",
+            "project": "podj",
+            "authToken": "67fc1d8db2f34572b90046e8aa78cb37931b870891de4f7da2e5a83fdf18c641"
+          }
+        }
+      ]
     }
   }
 }
