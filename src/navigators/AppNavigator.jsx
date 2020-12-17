@@ -1,17 +1,19 @@
-import React, { useContext } from "react";
+import React from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
 
 import AuthStackNavigator from "./AuthStackNavigator";
 import BottomNavigator from "./BottomNavigator";
 
 import { inject, observer } from "mobx-react";
-
-const AppStack = createStackNavigator();
+import SplashScreen from "../components/SplashScreen";
 
 const AppNavigator = ({ authStore }) => {
-  const { isLoggedIn } = authStore;
+  const { isLoggedIn, isLoading } = authStore;
+
+  if (isLoading) {
+    return <SplashScreen />;
+  }
 
   return (
     <NavigationContainer>
