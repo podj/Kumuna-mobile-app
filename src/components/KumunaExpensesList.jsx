@@ -24,7 +24,6 @@ const KumunaExpensesList = (props) => {
   const { user } = props.authStore;
   const [kumunaMembers, setKumunaMembers] = useState(null);
   const [expenses, setExpenses] = useState(null);
-  const _scrollView = useRef(null); // I swear to god I don't remember why that line is here. But removing it breaks things although it's not used. So...
 
   const populateDebtorsAndCreditor = (item) => {
     const expense = item.item;

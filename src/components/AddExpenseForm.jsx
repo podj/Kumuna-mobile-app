@@ -134,7 +134,7 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
           text1: "Wow! That worked 😄",
           text2: "We are refreshing the page for you",
         });
-        // registerForPushNotifications();
+        registerForPushNotifications();
       })
       .catch((e) => {
         Toast.show({ text1: "Damn!", text2: "We messed up", type: "error" });
