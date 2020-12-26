@@ -2,7 +2,9 @@
   "strict": {
     "text-font-family": "Lato-Light",
     "text-paragraph-1-font-size": 16,
+    "text-paragraph-2-font-size": 16,
     "text-subtitle-1-font-size": 16,
+    "text-subtitle-2-font-size": 16,
     "text-label-font-size": 16
   }
 }

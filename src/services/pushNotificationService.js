@@ -11,7 +11,7 @@ export const registerForPushNotifications = async () => {
   );
   let finalStatus = existingStatus;
   if (finalStatus === "undetermined" && Constants.isDevice) {
-    AsyncAlert(
+    await AsyncAlert(
       "Let's keep in touch!",
       "We want to update you about important activities in your Kumunas"
     );
@@ -33,9 +33,4 @@ export const registerForPushNotifications = async () => {
       lightColor: "#FF231F7C",
     });
   }
-};
-
-export const isRegisteredForPushNotifications = async () => {
-  const token = (await Notifications.getExpoPushTokenAsync()).data;
-  return Boolean(token);
 };

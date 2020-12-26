@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Keyboard, Platform, StyleSheet, View } from "react-native";
+import {
+  Keyboard,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
 
 import {
   Select,
@@ -35,17 +42,21 @@ const Selector = (props) => {
       <ListItem
         title={item.name}
         onPress={() => handlePressOut(item)}
-        style={{
+        style={[styles.listItem, {
           backgroundColor: isChecked
             ? theme["background-basic-color-3"]
             : theme["background-basic-color-1"],
-        }}
+        }]}
         accessoryLeft={() => (
           <Radio checked={isChecked} onChange={() => handlePressOut(item)} />
         )}
       />
     ) : (
-      <ListItem title={item.name} onPress={() => handlePressOut(item)} />
+      <ListItem
+        title={item.name}
+        onPress={() => handlePressOut(item)}
+        style={styles.listItem}
+      />
     );
   };
 
@@ -67,14 +78,32 @@ const Selector = (props) => {
         status={props.status}
         caption={props.caption}
       />
-      <View
-        style={{
-          ...styles.list,
-          display: showList ? "flex" : "none",
-          height: showList ? null : 0,
-        }}>
-        <List data={data} renderItem={renderListItem} bounces={false} />
-      </View>
+      <Modal animationType="fade" visible={showList} transparent={true}>
+        <Pressable
+          style={styles.centeredView}
+          onPress={() => setShowList(false)}>
+          <View style={styles.modalView}>
+            <List
+              ItemSeparatorComponent={() =>
+                <View style={[styles.listItemSeperator, { backgroundColor: theme["background-basic-color-2"] }]} />
+              }
+              data={data}
+              renderItem={renderListItem}
+              style={styles.list}
+            />
+            {multiSelect ? (
+              <Button
+                onPress={() => setShowList(false)}
+                style={{ marginVertical: 10 }}
+                status="basic">
+                Done
+              </Button>
+            ) : (
+              <></>
+            )}
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 };
@@ -82,11 +111,36 @@ const Selector = (props) => {
 export default Selector;
 
 const styles = StyleSheet.create({
-  list: {
-    position: Platform.OS == "ios" ? "absolute" : "relative",
-    top: Platform.OS == "ios" ? 60 : 0,
-    right: 0,
-    width: "100%",
-    maxHeight: 120,
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
+  modalView: {
+    margin: 20,
+    width: "80%",
+    borderRadius: 20,
+    padding: 3,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  list: {
+    borderRadius: 20,
+    width: "100%",
+    maxHeight: 200,
+  },
+  listItem: {
+  },
+  listItemSeperator: {
+    height: 1,
+  }
 });

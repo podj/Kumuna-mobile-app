@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Keyboard, StyleSheet, View } from "react-native";
+import { Keyboard, Pressable, StyleSheet, View } from "react-native";
 import { Button, Input, Spinner, Text } from "@ui-kitten/components";
 import Selector from "./Selector";
 import { registerForPushNotifications } from "../services/pushNotificationService";
@@ -220,7 +220,7 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
         caption={errors.amount ? errors.amount : ""}
       />
 
-      <TouchableOpacity
+      <Pressable
         onPress={() => {
           Keyboard.dismiss();
           setShowDateTimePicker(true);
@@ -238,7 +238,7 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
             showSoftInputOnFocus={false}
           />
         </View>
-      </TouchableOpacity>
+      </Pressable>
 
       <Button style={[styles.input, styles.button]} onPress={submitForm}>
         Add expense
@@ -253,6 +253,7 @@ const styles = StyleSheet.create({
   container: {
     height: "100%",
     marginTop: 20,
+    paddingBottom: 20,
   },
   input: {
     marginTop: 25,

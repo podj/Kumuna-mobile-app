@@ -43,7 +43,7 @@ export default ({ item }, userId) => {
           numberOfLines={1}
           appearance="hint">
           {getDebtorsNames(item.debtors)} owe
-          {item.debtors.length > 1 ? "" : "s"}{" "}
+          {!isDebt && item.debtors.length === 1 ? "s" : ""}{" "}
           {isDebt ? item.creditor.displayName : "you"}
         </Text>
       </Layout>

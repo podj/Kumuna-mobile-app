@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
-import FloatButton from "../components/FloatButton";
+import { FloatingAction } from "react-native-floating-action";
 import KumunaExpensesList from "../components/KumunaExpensesList";
 import AddExpenseForm from "../components/AddExpenseForm";
 import BottomModal from "../components/BottomModal";
@@ -14,6 +14,30 @@ import {
   View,
 } from "react-native";
 import StickyParallaxHeader from "react-native-sticky-parallax-header";
+import Toast from "react-native-toast-message";
+import FullScreenLoader from "../components/FullScreenLoader";
+import { Modalize } from "react-native-modalize";
+
+const actions = [
+  {
+    text: "Settle",
+    icon: require("../../assets/settle.png"),
+    name: "btn_settle",
+    position: 1,
+    color: "#4dabf5",
+    textBackground: "transparent",
+    textColor: "#ffffff",
+  },
+  {
+    text: "Add Expense",
+    icon: require("../../assets/plus.png"),
+    name: "btn_add_expense",
+    position: 2,
+    color: "#4dabf5",
+    textBackground: "transparent",
+    textColor: "#ffffff",
+  },
+];
 
 const nothingToShowYet = (
   <Layout>
@@ -45,10 +69,12 @@ const ExpensesScreen = () => {
   const [topReached, setTopReached] = useState(true);
   const [stickyHeaderEndReached, setStickyHeaderEndReached] = useState(false);
   const [stickyHeaderTopReached, setStickyHeaderTopReached] = useState(true);
-  const [isLoading, setLoading] = useState(false);
-  const [isLoadingData, setLoadingData] = useState(true);
+  const [showRefreshAnimation, setRefreshAnimation] = useState(false);
+  const [isFirstLoading, setFirstLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true);
   const [selectedKumunaIndex, setSelectedKumunaIndex] = useState(0);
-  const [userBalance, setUserBalance] = useState(0);
+  const [userBalance, setUserBalance] = useState(null);
+  const bottomModal = useRef(null);
 
   const getKumunasTabs = () => {
     if (kumunas.length === 0) {
@@ -76,8 +102,7 @@ const ExpensesScreen = () => {
                 Platform.OS == "andorind" ? true : shouldBeEnabled()
               }
               nestedScrollEnabled
-              shouldComponentUpdate={isLoadingData}
-              onDoneLoading={() => {}}
+              shouldComponentUpdate={isLoading}
               kumunaId={kumuna.id}
             />
           </Layout>
@@ -89,32 +114,33 @@ const ExpensesScreen = () => {
 
   const loadKumunas = async () => {
     try {
-      let rawKumunas = await backendService.getKumunas();
-      if (rawKumunas.length === 0) {
-        return;
-      }
-      let kumunas = await Promise.all(rawKumunas.map(populateKumunaThumbnail));
-      setKumunas(kumunas);
-    } catch (e) {}
+      const rawKumunas = await backendService.getKumunas();
+      return await Promise.all(rawKumunas.map(populateKumunaThumbnail));
+    } catch (e) {
+      Toast.show({ text1: "Oops", text2: "Someone will be fired" });
+    }
   };
 
-  const refreshUserBalance = async () => {
+  const refreshUserBalance = async (kumunas) => {
     const kumuna = kumunas[selectedKumunaIndex];
-    if (!kumuna) {
-      return;
-    }
-    const balance = await backendService.getBalanceForKumunaId(kumuna.id);
-    setUserBalance(balance);
+    return await backendService.getBalanceForKumunaId(kumuna.id);
   };
 
   const refreshSelectedKumunaData = async () => {
-    setLoadingData(true);
-    setLoading(false);
-    setUserBalance(null);
-    await loadKumunas();
-    await refreshUserBalance();
-    setLoadingData(false);
+    setLoading(true);
+    setRefreshAnimation(false);
+    const kumunas = await loadKumunas();
+    const userBalance = await refreshUserBalance(kumunas);
+    setKumunas(kumunas);
+    setUserBalance(userBalance);
+    setFirstLoading(false);
   };
+
+  useEffect(() => {
+    if (kumunas.length > 0 && userBalance !== null) {
+      setLoading(false);
+    }
+  }, [kumunas, userBalance]);
 
   const expenseWasAdded = () => {
     refreshSelectedKumunaData();
@@ -167,8 +193,10 @@ const ExpensesScreen = () => {
     });
 
     let kumuna = kumunas[selectedKumunaIndex];
-    let userBalanceText = <Spinner size="tiny" status="basic" />;
-    if (userBalance || userBalance === 0) {
+    let userBalanceText = <></>;
+    if (isLoading) {
+      userBalanceText = <Spinner size="tiny" status="basic" />;
+    } else if (kumuna.title !== null) {
       userBalanceText = (
         <>
           <Text style={styles.message} appearance="hint">
@@ -182,8 +210,6 @@ const ExpensesScreen = () => {
             }>{`${userBalance.toLocaleString("en")}₪`}</Text>
         </>
       );
-    } else if (!isLoadingData && false) {
-      userBalanceText = <></>;
     }
 
     return (
@@ -223,13 +249,17 @@ const ExpensesScreen = () => {
     }
   };
 
+  if (isFirstLoading) {
+    return <FullScreenLoader />;
+  }
+
   return (
     <Layout style={{ flex: 1 }}>
       <StickyParallaxHeader
         refreshControl={
           <RefreshControl
             style={{ zIndex: 1 }}
-            refreshing={isLoading}
+            refreshing={showRefreshAnimation}
             onRefresh={refreshSelectedKumunaData}
           />
         }
@@ -258,23 +288,32 @@ const ExpensesScreen = () => {
           { useNativeDriver: false }
         )}
       />
-      <FloatButton
-        style={{ right: 26 }}
-        onPress={() => setVisible(true)}
-        disabled={isLoadingData}
+      <FloatingAction
+        actions={actions}
+        onPressItem={() => bottomModal.current.open()}
+        color="#4dabf5"
+        overlayColor="transparent"
+        floatingIcon={require("../../assets/more.png")}
       />
-      <BottomModal visible={visible} onDismiss={() => setVisible(false)}>
+      <Modalize
+        ref={bottomModal}
+        modalTopOffset={200}
+        scrollViewProps={{ showsVerticalScrollIndicator: false }}
+        modalStyle={{
+          backgroundColor: theme["background-basic-color-1"],
+          marginHorizontal: 10,
+          paddingHorizontal: 20,
+        }}>
         <AddExpenseForm
           kumuna={kumunas[selectedKumunaIndex]}
           onDone={expenseWasAdded}
         />
-      </BottomModal>
+      </Modalize>
     </Layout>
   );
 };
 
 export default ExpensesScreen;
-
 
 const styles = StyleSheet.create({
   foreground: {

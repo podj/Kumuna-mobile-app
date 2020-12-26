@@ -6,6 +6,7 @@ import { Layout, Text, List, Spinner } from "@ui-kitten/components";
 import ExpenseItem from "./ExpenseItem";
 import * as backendService from "../services/backendService";
 import { inject, observer } from "mobx-react";
+import { set } from "mobx";
 
 
 const listPlaceholder = (
@@ -20,10 +21,11 @@ const listPlaceholder = (
 );
 
 const KumunaExpensesList = (props) => {
-  const { kumunaId } = props;
-  const { user } = props.authStore;
+  const { kumunaId, authStore, shouldComponentUpdate } = props;
+  const { user } = authStore;
   const [kumunaMembers, setKumunaMembers] = useState(null);
   const [expenses, setExpenses] = useState(null);
+  const [isLoading, setLoading] = useState(true);
 
   const populateDebtorsAndCreditor = (item) => {
     const expense = item.item;
@@ -38,6 +40,7 @@ const KumunaExpensesList = (props) => {
   };
 
   const loadExpenses = () => {
+    console.log("Loading expenses");
     getKumunaExpenses(kumunaId)
       .then(setExpenses)
       .catch((e) => {
@@ -49,11 +52,12 @@ const KumunaExpensesList = (props) => {
         });
       })
       .finally(() => {
-        props.onDoneLoading();
+        setLoading(false);
       });
   };
 
-  const loadKumuna = async () => {
+  const loadKumunaMembers = async () => {
+    setLoading(true);
     const kumunaMembers = await backendService.getKumunaMembers(kumunaId);
     const memberIdToMember = kumunaMembers.reduce(
       (members, member) => ((members[member.user.id] = member.user), members),
@@ -63,8 +67,8 @@ const KumunaExpensesList = (props) => {
   };
 
   useEffect(() => {
-    if (props.shouldComponentUpdate) {
-      loadKumuna()
+    if (shouldComponentUpdate) {
+      loadKumunaMembers()
         .then(() => loadExpenses())
         .catch(() =>
           Toast.show({
@@ -74,9 +78,21 @@ const KumunaExpensesList = (props) => {
           })
         );
     }
-  }, [props.shouldComponentUpdate]);
+  }, [shouldComponentUpdate]);
 
-  if (props.shouldComponentUpdate) {
+  useEffect(() => {
+    loadKumunaMembers()
+      .then(() => loadExpenses())
+      .catch(() =>
+        Toast.show({
+          text1: "Oops",
+          text2: "We messed up, someone will get fired",
+          type: "error",
+        })
+      );
+  }, []);
+
+  if (isLoading) {
     return (
       <Layout
         style={{

@@ -7,6 +7,7 @@ import {
   Animated,
   Pressable,
   Easing,
+  ScrollView,
 } from "react-native";
 
 export default function (props) {
@@ -67,7 +68,9 @@ export default function (props) {
         <Animated.View
           style={[styles.container, { top }]}
           {...panResponders.panHandlers}>
-          {children}
+          <ScrollView nestedScrollEnabled={true} scroll>
+            {children}
+          </ScrollView>
         </Animated.View>
       </Pressable>
     </Modal>
