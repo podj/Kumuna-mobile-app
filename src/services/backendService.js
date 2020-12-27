@@ -3,6 +3,7 @@ import { uploadImage } from "./firebaseService";
 
 axios.defaults.baseURL =
   "http://kumunaapp-env.eba-p4xm5ys7.us-east-2.elasticbeanstalk.com";
+// axios.defaults.baseURL = "http://localhost:5000";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 
@@ -106,6 +107,13 @@ export const createExpense = async (expense) => {
     throw new Error("Failed to create expense");
   }
 
+  return response.data;
+};
+
+export const deleteExpense = async (expense) => {
+  const response = await axios.delete(
+    `/kumunas/${expense.kumuna.id}/loans/${expense.id}`
+  );
   return response.data;
 };
 

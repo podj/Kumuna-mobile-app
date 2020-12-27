@@ -43,7 +43,9 @@ const BottomTabBar = ({ navigation, state }) => (
 );
 
 export default () => (
-  <Navigator tabBar={(props) => <BottomTabBar {...props} />}>
+  <Navigator
+    tabBar={(props) => <BottomTabBar {...props} />}
+    initialRouteName="Expenses">
     <Screen name="Kumunas" component={KumunasNavigator} />
     <Screen name="Expenses" component={ExpensesStackNavigator} />
     <Screen name="Shared Schedule" component={SharedScheduleScreen} />

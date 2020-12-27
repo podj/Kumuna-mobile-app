@@ -8,7 +8,6 @@ import * as backendService from "../services/backendService";
 import { inject, observer } from "mobx-react";
 import { set } from "mobx";
 
-
 const listPlaceholder = (
   <Layout>
     <Text style={{ textAlign: "center" }} category="h5">
@@ -23,37 +22,32 @@ const listPlaceholder = (
 const KumunaExpensesList = (props) => {
   const { kumunaId, authStore, shouldComponentUpdate } = props;
   const { user } = authStore;
-  const [kumunaMembers, setKumunaMembers] = useState(null);
   const [expenses, setExpenses] = useState(null);
   const [isLoading, setLoading] = useState(true);
 
-  const populateDebtorsAndCreditor = (item) => {
-    const expense = item.item;
-    expense.debtors = [];
-    for (var i = 0; i < expense.debts.length; i++) {
-      expense.debtors.push(kumunaMembers[expense.debts[i].debtorId]);
-    }
+  const loadExpenses = async (kumunaMembers) => {
+    try {
+      const expenses = await getKumunaExpenses(kumunaId);
+      for (let i = 0; i < expenses.length; i++) {
+        const expense = expenses[i];
+        expense.debtors = [];
+        expense.creditor = kumunaMembers[expense.creditorId];
+        for (let j = 0; j < expense.debts.length; j++) {
+          expense.debtors.push(kumunaMembers[expense.debts[j].debtorId]);
+        }
+      }
 
-    expense.creditor = kumunaMembers[expense.creditorId];
-
-    return item;
-  };
-
-  const loadExpenses = () => {
-    console.log("Loading expenses");
-    getKumunaExpenses(kumunaId)
-      .then(setExpenses)
-      .catch((e) => {
-        console.error(e);
-        Toast.show({
-          type: "error",
-          text1: "Oops",
-          text2: "Something went wrong",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
+      setExpenses(expenses);
+    } catch (e) {
+      console.error(e);
+      Toast.show({
+        type: "error",
+        text1: "Oops",
+        text2: "Something went wrong",
       });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const loadKumunaMembers = async () => {
@@ -63,33 +57,30 @@ const KumunaExpensesList = (props) => {
       (members, member) => ((members[member.user.id] = member.user), members),
       {}
     );
-    setKumunaMembers(memberIdToMember);
+    
+    loadExpenses(memberIdToMember);
   };
 
   useEffect(() => {
     if (shouldComponentUpdate) {
-      loadKumunaMembers()
-        .then(() => loadExpenses())
-        .catch(() =>
-          Toast.show({
-            text1: "Oops",
-            text2: "We messed up, someone will get fired",
-            type: "error",
-          })
-        );
-    }
-  }, [shouldComponentUpdate]);
-
-  useEffect(() => {
-    loadKumunaMembers()
-      .then(() => loadExpenses())
-      .catch(() =>
+      loadKumunaMembers().catch(() =>
         Toast.show({
           text1: "Oops",
           text2: "We messed up, someone will get fired",
           type: "error",
         })
       );
+    }
+  }, [shouldComponentUpdate]);
+
+  useEffect(() => {
+    loadKumunaMembers().catch(() =>
+      Toast.show({
+        text1: "Oops",
+        text2: "We messed up, someone will get fired",
+        type: "error",
+      })
+    );
   }, []);
 
   if (isLoading) {
@@ -112,9 +103,9 @@ const KumunaExpensesList = (props) => {
       ListEmptyComponent={listPlaceholder}
       showsVerticalScrollIndicator={false}
       data={expenses}
-      renderItem={(item) =>
-        ExpenseItem(populateDebtorsAndCreditor(item), user.appUser.id)
-      }
+      renderItem={(expense) => (
+        <ExpenseItem expense={expense.item} userId={user.appUser.id} />
+      )}
       style={styles.expenses}
     />
   );

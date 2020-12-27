@@ -38,7 +38,7 @@ export default function ({ navigation }) {
   };
 
   const pickImage = async () => {
-    const cameraRollPermissions = await ImagePicker.getCameraRollPermissionsAsync();
+    const cameraRollPermissions = await ImagePicker.getMediaLibraryPermissionsAsync();
     if (cameraRollPermissions.accessPrivileges === "none") {
       if (!cameraRollPermissions.canAskAgain) {
         Alert.alert(
@@ -51,7 +51,9 @@ export default function ({ navigation }) {
         "Camera roll permission",
         "We are about to ask for permissions to your camera roll so you can choose a picture for your Kumuna's proifle"
       );
-      const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+      const {
+        status,
+      } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status === "denied") {
         Alert.alert(
           "No worry",

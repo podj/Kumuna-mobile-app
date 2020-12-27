@@ -61,7 +61,6 @@ const populateKumunaThumbnail = async (kumuna) => {
 };
 
 const ExpensesScreen = () => {
-  const [visible, setVisible] = useState(false);
   const [kumunas, setKumunas] = useState([]);
   const [scroll, setScroll] = useState(new Animated.Value(0));
   const theme = useTheme();
@@ -92,10 +91,7 @@ const ExpensesScreen = () => {
       kumunasTabs.push({
         title: kumuna.name,
         content: (
-          <Layout
-            style={{
-              paddingHorizontal: 20,
-            }}>
+          <Layout>
             <KumunaExpensesList
               onScroll={onScroll}
               scrollEnabled={
@@ -144,7 +140,7 @@ const ExpensesScreen = () => {
 
   const expenseWasAdded = () => {
     refreshSelectedKumunaData();
-    setVisible(false);
+    bottomModal.current.close();
   };
 
   useEffect(() => {
@@ -301,7 +297,8 @@ const ExpensesScreen = () => {
         scrollViewProps={{ showsVerticalScrollIndicator: false }}
         modalStyle={{
           backgroundColor: theme["background-basic-color-1"],
-          marginHorizontal: 10,
+          marginHorizontal: 0,
+          paddingTop: 10,
           paddingHorizontal: 20,
         }}>
         <AddExpenseForm
