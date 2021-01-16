@@ -8,8 +8,8 @@
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "#16192A"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -28,7 +28,8 @@
     "android": {
       "package": "app.kumuna",
       "googleServicesFile": "./google-services.json",
-      "useNextNotificationsApi": true
+      "useNextNotificationsApi": true,
+      "softwareKeyboardLayoutMode": "pan"
     },
     "hooks": {
       "postPublish": [

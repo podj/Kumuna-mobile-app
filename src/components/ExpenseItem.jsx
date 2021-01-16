@@ -1,23 +1,18 @@
-import React, { useState } from "react";
-import { StyleSheet, Pressable } from "react-native";
+import React from "react";
+import { StyleSheet } from "react-native";
 
-import { Layout, Text, useTheme } from "@ui-kitten/components";
+import { Layout, Text } from "@ui-kitten/components";
 import { getShortMonthName } from "../utils/DateUtils";
 import AsyncAlert from "../utils/AsyncAlert";
-import * as backendService from "../services/backendService";
 import Toast from "react-native-toast-message";
+import { inject, observer } from "mobx-react";
+import { TouchableHighlight } from "react-native-gesture-handler";
 
-export default function ({ expense, userId }) {
-  console.log("user id", userId);
+const ExpenseItem = function ({ expense, userId, kumunaStore }) {
   const lightGreen = "#66FF99";
   const lightRed = "#FF6699";
-  const theme = useTheme();
-  const [pressed, setPressed] = useState(false);
 
   const isCredit = expense.creditorId === userId;
-
-  expense.createdTime = new Date(expense.createdTime);
-  expense.date = new Date(expense.date);
 
   const getDebtorsNames = () => {
     const debtors = expense.debtors;
@@ -37,7 +32,7 @@ export default function ({ expense, userId }) {
   const deleteExpense = async () => {
     const confirmed = await AsyncAlert(
       "Deleting expense",
-      `Deleting an expense is irreversable and will affect users balance. Are you sure you want to delete ${expense.name}?`,
+      `Deleting an expense is irreversable and will affect users' balances. Are you sure you want to delete ${expense.name}?`,
       true
     );
 
@@ -46,8 +41,9 @@ export default function ({ expense, userId }) {
     }
 
     try {
-      await backendService.deleteExpense(expense);
+      await kumunaStore.deleteExpense(expense);
     } catch (e) {
+      console.error(e);
       Toast.show({
         text1: "Oops something went wrong",
         text2: "Someone is getting fired for sure",
@@ -56,36 +52,20 @@ export default function ({ expense, userId }) {
     }
   };
 
-  const togglePress = () => {
-    setPressed(!pressed);
-  };
-
   const getExpensePriceColor = () => {
     if (isCredit) {
       return lightGreen;
     }
 
     const debtors = expense.debtors;
-    console.log(debtors);
     const indexOfCurrentUser = debtors.map((d) => d.id).indexOf(userId);
 
     return indexOfCurrentUser === -1 ? "#fafafa" : lightRed;
   };
 
   return (
-    <Pressable
-      onLongPress={deleteExpense}
-      onPressIn={togglePress}
-      onPressOut={togglePress}>
-      <Layout
-        style={[
-          styles.row,
-          {
-            backgroundColor: pressed
-              ? theme["background-basic-color-4"]
-              : theme["background-basic-color-1"],
-          },
-        ]}>
+    <TouchableHighlight onLongPress={deleteExpense}>
+      <Layout style={styles.row}>
         <Layout style={styles.date}>
           <Text category="h6">{expense.date.getDate()}</Text>
           <Text category="p1">{getShortMonthName(expense.date)}.</Text>
@@ -112,9 +92,11 @@ export default function ({ expense, userId }) {
           </Text>
         </Layout>
       </Layout>
-    </Pressable>
+    </TouchableHighlight>
   );
-}
+};
+
+export default inject("kumunaStore")(observer(ExpenseItem));
 
 const styles = StyleSheet.create({
   row: {

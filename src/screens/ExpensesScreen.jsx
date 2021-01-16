@@ -3,9 +3,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { FloatingAction } from "react-native-floating-action";
 import KumunaExpensesList from "../components/KumunaExpensesList";
 import AddExpenseForm from "../components/AddExpenseForm";
-import BottomModal from "../components/BottomModal";
 import { Layout, Spinner, Text, useTheme } from "@ui-kitten/components";
 import * as backendService from "../services/backendService";
+import { inject, observer } from "mobx-react";
 import {
   Animated,
   Platform,
@@ -17,6 +17,7 @@ import StickyParallaxHeader from "react-native-sticky-parallax-header";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { Modalize } from "react-native-modalize";
+import SuccessModal from "../components/SuccessModal";
 
 const actions = [
   {
@@ -60,8 +61,9 @@ const populateKumunaThumbnail = async (kumuna) => {
   return kumuna;
 };
 
-const ExpensesScreen = () => {
-  const [kumunas, setKumunas] = useState([]);
+const ExpensesScreen = ({ kumunaStore }) => {
+  const { setKumunaId, isLoading, userBalance } = kumunaStore;
+  const [kumunas, setKumunas] = useState(null);
   const [scroll, setScroll] = useState(new Animated.Value(0));
   const theme = useTheme();
   const [endReached, setEndReached] = useState(false);
@@ -70,10 +72,9 @@ const ExpensesScreen = () => {
   const [stickyHeaderTopReached, setStickyHeaderTopReached] = useState(true);
   const [showRefreshAnimation, setRefreshAnimation] = useState(false);
   const [isFirstLoading, setFirstLoading] = useState(true);
-  const [isLoading, setLoading] = useState(true);
   const [selectedKumunaIndex, setSelectedKumunaIndex] = useState(0);
-  const [userBalance, setUserBalance] = useState(null);
   const bottomModal = useRef(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const getKumunasTabs = () => {
     if (kumunas.length === 0) {
@@ -98,8 +99,6 @@ const ExpensesScreen = () => {
                 Platform.OS == "andorind" ? true : shouldBeEnabled()
               }
               nestedScrollEnabled
-              shouldComponentUpdate={isLoading}
-              kumunaId={kumuna.id}
             />
           </Layout>
         ),
@@ -117,35 +116,30 @@ const ExpensesScreen = () => {
     }
   };
 
-  const refreshUserBalance = async (kumunas) => {
-    const kumuna = kumunas[selectedKumunaIndex];
-    return await backendService.getBalanceForKumunaId(kumuna.id);
-  };
-
   const refreshSelectedKumunaData = async () => {
-    setLoading(true);
     setRefreshAnimation(false);
-    const kumunas = await loadKumunas();
-    const userBalance = await refreshUserBalance(kumunas);
-    setKumunas(kumunas);
-    setUserBalance(userBalance);
+    if (kumunas === null) {
+      return;
+    }
+    setKumunaId(kumunas[selectedKumunaIndex].id);
     setFirstLoading(false);
   };
 
-  useEffect(() => {
-    if (kumunas.length > 0 && userBalance !== null) {
-      setLoading(false);
-    }
-  }, [kumunas, userBalance]);
-
   const expenseWasAdded = () => {
-    refreshSelectedKumunaData();
     bottomModal.current.close();
+    setShowSuccessModal(true);
   };
 
   useEffect(() => {
     refreshSelectedKumunaData();
-  }, [selectedKumunaIndex]);
+  }, [selectedKumunaIndex, kumunas]);
+
+  useEffect(() => {
+    loadKumunas().then((kumunas) => {
+      setKumunas(kumunas);
+      setFirstLoading(false);
+    });
+  }, []);
 
   const renderHeader = () => {
     const opacity = scroll.interpolate({
@@ -155,7 +149,7 @@ const ExpensesScreen = () => {
     });
 
     let userBalanceText = <Spinner size="tiny" status="basic" />;
-    if (userBalance || userBalance === 0) {
+    if (!isLoading) {
       userBalanceText = (
         <Text
           style={{ fontSize: 20 }}
@@ -242,6 +236,7 @@ const ExpensesScreen = () => {
       setTopReached(true);
       setEndReached(false);
       setStickyHeaderTopReached(true);
+      setStickyHeaderEndReached(false);
     }
   };
 
@@ -284,13 +279,15 @@ const ExpensesScreen = () => {
           { useNativeDriver: false }
         )}
       />
-      <FloatingAction
-        actions={actions}
-        onPressItem={() => bottomModal.current.open()}
-        color="#4dabf5"
-        overlayColor="transparent"
-        floatingIcon={require("../../assets/more.png")}
-      />
+      {!isLoading && (
+        <FloatingAction
+          actions={actions}
+          onPressItem={() => bottomModal.current.open()}
+          color="#4dabf5"
+          overlayColor="transparent"
+          floatingIcon={require("../../assets/more.png")}
+        />
+      )}
       <Modalize
         ref={bottomModal}
         modalTopOffset={200}
@@ -306,11 +303,14 @@ const ExpensesScreen = () => {
           onDone={expenseWasAdded}
         />
       </Modalize>
+      {showSuccessModal && (
+        <SuccessModal onAnimationDone={() => setShowSuccessModal(false)} />
+      )}
     </Layout>
   );
 };
 
-export default ExpensesScreen;
+export default inject("kumunaStore")(observer(ExpensesScreen));
 
 const styles = StyleSheet.create({
   foreground: {

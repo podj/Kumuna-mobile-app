@@ -1,4 +1,4 @@
-import { I18nManager } from "react-native";
+import { I18nManager, AppState } from "react-native";
 
 I18nManager.forceRTL(false);
 I18nManager.allowRTL(false);
@@ -22,6 +22,19 @@ import * as backendService from "./src/services/backendService";
 import { Provider } from "mobx-react";
 import authStore from "./src/stores/AuthStore";
 import * as Sentry from "sentry-expo";
+import kumunaStore from "./src/stores/KumunaStore";
+
+const REFRESH_AUTH_TOKEN_INTERVAL_IN_MILISECONDS = 3300000; // 55 minutes
+
+function refreshAuthToken(appState) {
+  if (appState !== "active") {
+    return;
+  }
+
+  firebaseService.getUserToken().then((token) => {
+    axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+  });
+}
 
 Sentry.init({
   dsn:
@@ -55,10 +68,23 @@ const App = () => {
     });
   };
 
-  useEffect(
-    () => firebaseService.onAuthStateChanged(handleAuthStateChange),
-    []
-  );
+  useEffect(() => {
+    const unsbscribe = firebaseService.onAuthStateChanged(
+      handleAuthStateChange
+    );
+    
+    const refreshTokenInterval = setInterval(() => {
+      refreshAuthToken(AppState.currentState);
+    }, REFRESH_AUTH_TOKEN_INTERVAL_IN_MILISECONDS);
+
+    AppState.addEventListener("change", refreshAuthToken);
+
+    return () => {
+      unsbscribe();
+      clearInterval(refreshTokenInterval);
+      AppState.removeEventListener("change", refreshAuthToken);
+    };
+  }, []);
 
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
@@ -70,7 +96,7 @@ const App = () => {
           {...eva}
           theme={{ ...eva.dark }}
           customMapping={mapping}>
-          <Provider authStore={authStore}>
+          <Provider authStore={authStore} kumunaStore={kumunaStore}>
             <AppNavigator />
           </Provider>
         </ApplicationProvider>

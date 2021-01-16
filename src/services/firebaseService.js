@@ -52,7 +52,7 @@ export const getUserToken = () => {
   if (!user) {
     return;
   }
-  return user.getIdToken(false);
+  return user.getIdToken(true);
 };
 
 export const uploadImage = async (image) => {

@@ -1,4 +1,4 @@
-import { action, computed, observable, makeObservable, get } from "mobx";
+import { action, computed, observable, makeObservable } from "mobx";
 
 class AuthStore {
   user = null;

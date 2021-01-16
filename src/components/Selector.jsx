@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Keyboard,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Keyboard, Modal, Pressable, StyleSheet, View } from "react-native";
 
 import {
   Select,
@@ -15,11 +8,14 @@ import {
   useTheme,
   Radio,
   Button,
+  Input,
 } from "@ui-kitten/components";
+import { useRef } from "react";
 
 const Selector = (props) => {
   const { data, label, value, toString, onValueChange, multiSelect } = props;
   const theme = useTheme();
+  const inputRef = useRef(null);
 
   const [showList, setShowList] = useState(false);
 
@@ -40,20 +36,23 @@ const Selector = (props) => {
     const isChecked = multiSelect && value.some((i) => i.id === item.id);
     return multiSelect ? (
       <ListItem
-        title={item.name}
+        title={item.displayName}
         onPress={() => handlePressOut(item)}
-        style={[styles.listItem, {
-          backgroundColor: isChecked
-            ? theme["background-basic-color-3"]
-            : theme["background-basic-color-1"],
-        }]}
+        style={[
+          styles.listItem,
+          {
+            backgroundColor: isChecked
+              ? theme["background-basic-color-3"]
+              : theme["background-basic-color-1"],
+          },
+        ]}
         accessoryLeft={() => (
           <Radio checked={isChecked} onChange={() => handlePressOut(item)} />
         )}
       />
     ) : (
       <ListItem
-        title={item.name}
+        title={item.displayName}
         onPress={() => handlePressOut(item)}
         style={styles.listItem}
       />
@@ -61,16 +60,15 @@ const Selector = (props) => {
   };
 
   return (
-    <View style={[props.style]}>
-      <Select
+    <>
+      <Input
+        ref={inputRef}
+        style={props.style}
         label={label}
         value={toString(value)}
-        onBlur={() => {
-          setShowList(false);
-        }}
-        onPressIn={() => {
+        onFocus={() => {
+          inputRef.current.blur();
           setShowList(!showList);
-          Keyboard.dismiss();
         }}
         placeholder={
           multiSelect ? "Select at least one option" : "Select one option"
@@ -84,9 +82,14 @@ const Selector = (props) => {
           onPress={() => setShowList(false)}>
           <View style={styles.modalView}>
             <List
-              ItemSeparatorComponent={() =>
-                <View style={[styles.listItemSeperator, { backgroundColor: theme["background-basic-color-2"] }]} />
-              }
+              ItemSeparatorComponent={() => (
+                <View
+                  style={[
+                    styles.listItemSeperator,
+                    { backgroundColor: theme["background-basic-color-2"] },
+                  ]}
+                />
+              )}
               data={data}
               renderItem={renderListItem}
               style={styles.list}
@@ -104,7 +107,7 @@ const Selector = (props) => {
           </View>
         </Pressable>
       </Modal>
-    </View>
+    </>
   );
 };
 
@@ -138,9 +141,8 @@ const styles = StyleSheet.create({
     width: "100%",
     maxHeight: 200,
   },
-  listItem: {
-  },
+  listItem: {},
   listItemSeperator: {
     height: 1,
-  }
+  },
 });

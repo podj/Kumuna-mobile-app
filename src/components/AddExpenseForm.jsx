@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useState } from "react";
 import { Keyboard, Pressable, StyleSheet, View } from "react-native";
+import { inject, observer } from "mobx-react";
 import { Button, Input, Spinner, Text } from "@ui-kitten/components";
 import Selector from "./Selector";
 import { registerForPushNotifications } from "../services/pushNotificationService";
 
 import * as yup from "yup";
 
-import * as backendService from "../services/backendService";
 import Toast from "react-native-toast-message";
 import DatePicker from "./DatePicker";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { TouchableHighlight } from "react-native-gesture-handler";
 
-const AddExpenseForm = ({ kumuna, onDone }) => {
-  const [isLoading, setLoading] = useState(false);
-  const [kumunaMembers, setKumunaMembers] = useState([]);
+const AddExpenseForm = ({ kumuna, onDone, kumunaStore }) => {
+  const { addExpense, isLoading, members } = kumunaStore;
   const [showDateTimePicker, setShowDateTimePicker] = useState(false);
   const [values, setValues] = useState({
     creditor: null,
@@ -38,7 +36,6 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
   };
 
   const createExpense = async (expense, kumunaId) => {
-    setLoading(true);
     const expenseRequest = {
       name: expense.name,
       date: expense.date,
@@ -47,35 +44,13 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
       debtorsIds: expense.debtors.map((debtor) => debtor.id),
       kumunaId,
     };
-
-    onDone();
-    await backendService.createExpense(expenseRequest);
+    await addExpense(expenseRequest);
   };
-
-  const loadKumunaMembers = async () => {
-    try {
-      let kumunaMembers = await backendService.getKumunaMembers(kumuna.id);
-      kumunaMembers = kumunaMembers.map((membership) => {
-        const member = membership.user;
-        member.name = member.displayName;
-        return member;
-      });
-      setKumunaMembers(kumunaMembers);
-    } catch (e) {
-      Toast.show({
-        text1: "Oops",
-        text2: "Something went wrong",
-        type: "error",
-      });
-    }
-  };
-
-  useEffect(() => {
-    loadKumunaMembers();
-  }, []);
 
   const getDebtorsValue = (debtors) => {
-    return debtors ? debtors.map((debtor) => debtor.name).join(", ") : "";
+    return debtors
+      ? debtors.map((debtor) => debtor.displayName).join(", ")
+      : "";
   };
 
   const validateField = (fieldName, newVal) => {
@@ -130,33 +105,13 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
 
     createExpense(values, kumuna.id)
       .then(() => {
-        Toast.show({
-          text1: "Wow! That worked 😄",
-          text2: "We are refreshing the page for you",
-        });
+        onDone();
         registerForPushNotifications();
       })
-      .catch((e) => {
+      .catch(() => {
         Toast.show({ text1: "Damn!", text2: "We messed up", type: "error" });
       });
   };
-
-  if (isLoading) {
-    return (
-      <View
-        style={[
-          styles.container,
-          {
-            alignItems: "cetner",
-            justifyContent: "cetner",
-            alignContent: "center",
-            flex: 1,
-          },
-        ]}>
-        <Spinner size="large" status="basic" />
-      </View>
-    );
-  }
 
   if (showDateTimePicker) {
     return (
@@ -187,24 +142,24 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
 
       <Selector
         label="Who paid"
-        data={kumunaMembers}
+        data={Object.values(members)}
         value={values.creditor}
-        toString={(val) => (val ? val.name : "")}
+        toString={(val) => (val ? val.displayName : "")}
         onValueChange={handleChange("creditor")}
         multiSelect={false}
-        style={[styles.input, { zIndex: 2 }]}
+        style={styles.input}
         status={errors.creditor ? "danger" : "basic"}
         caption={errors.creditor ? errors.creditor : ""}
       />
 
       <Selector
         label="Splits between"
-        data={kumunaMembers}
+        data={Object.values(members)}
         onValueChange={handleChange("debtors")}
         value={values.debtors}
         toString={getDebtorsValue}
         multiSelect={true}
-        style={[styles.input, { zIndex: 1 }]}
+        style={styles.input}
         status={errors.debtors ? "danger" : "basic"}
         caption={errors.debtors ? errors.debtors : ""}
       />
@@ -227,7 +182,7 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
         }}>
         <View pointerEvents="none">
           <Input
-            label="Date"
+            label="Date of purchase"
             value={values.date.toLocaleDateString()}
             onFocus={() => setShowDateTimePicker(true)}
             onBlur={() => setShowDateTimePicker(false)}
@@ -240,14 +195,17 @@ const AddExpenseForm = ({ kumuna, onDone }) => {
         </View>
       </Pressable>
 
-      <Button style={[styles.input, styles.button]} onPress={submitForm}>
-        Add expense
+      <Button
+        style={[styles.input, styles.button]}
+        onPress={submitForm}
+        disabled={isLoading}>
+        {isLoading ? <Spinner status="basic" size="tiny" /> : "add expense"}
       </Button>
     </View>
   );
 };
 
-export default AddExpenseForm;
+export default inject("kumunaStore")(observer(AddExpenseForm));
 
 const styles = StyleSheet.create({
   container: {
