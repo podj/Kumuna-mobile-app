@@ -8,11 +8,11 @@
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#16192A"
+      "resizeMode": "contain",
+      "backgroundColor": "#2a324d"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "checkAutomatically": "ON_ERROR_RECOVERY"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -20,7 +20,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "app.kumuna",
-      "buildNumber": "0.0.1"
+      "buildNumber": "0.0.2"
     },
     "web": {
       "favicon": "./assets/favicon.png"

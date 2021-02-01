@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import * as Updates from "expo-updates";
 
-import { Button, Spinner } from "@ui-kitten/components";
+import { Button, Spinner, Text } from "@ui-kitten/components";
 
 import ScreenLayout from "../components/ScreenLayout";
 
@@ -15,7 +16,12 @@ export default function () {
 
   return (
     <ScreenLayout title="Shared Schedule">
-      <Button onPress={logout} appearance="outline" status="danger" disabled={isLoading} >
+      <Text>Release version: {Updates.updateId}</Text>
+      <Button
+        onPress={logout}
+        appearance="outline"
+        status="danger"
+        disabled={isLoading}>
         {isLoading ? <Spinner status="basic" size="tiny" /> : "Log out"}
       </Button>
     </ScreenLayout>

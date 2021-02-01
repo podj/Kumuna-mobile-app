@@ -46,7 +46,8 @@
     "sentry-expo": "^3.0.4",
     "yup": "^0.29.3",
     "lottie-react-native": "~2.6.1",
-    "expo-splash-screen": "~0.8.1"
+    "expo-splash-screen": "~0.8.1",
+    "expo-updates": "~0.4.1"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0"

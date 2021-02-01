@@ -1,19 +1,22 @@
 import React, { useState } from "react";
-import { Keyboard, Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { inject, observer } from "mobx-react";
-import { Button, Input, Spinner, Text } from "@ui-kitten/components";
+import {
+  Button,
+  Datepicker,
+  Input,
+  Spinner,
+  Text,
+} from "@ui-kitten/components";
 import Selector from "./Selector";
 import { registerForPushNotifications } from "../services/pushNotificationService";
 
 import * as yup from "yup";
 
 import Toast from "react-native-toast-message";
-import DatePicker from "./DatePicker";
-import { TouchableHighlight } from "react-native-gesture-handler";
 
 const AddExpenseForm = ({ kumuna, onDone, kumunaStore }) => {
   const { addExpense, isLoading, members } = kumunaStore;
-  const [showDateTimePicker, setShowDateTimePicker] = useState(false);
   const [values, setValues] = useState({
     creditor: null,
     debtors: [],
@@ -113,18 +116,6 @@ const AddExpenseForm = ({ kumuna, onDone, kumunaStore }) => {
       });
   };
 
-  if (showDateTimePicker) {
-    return (
-      <DatePicker
-        onClose={() => {
-          setShowDateTimePicker(false);
-        }}
-        value={values.date}
-        onChange={handleChange("date")}
-      />
-    );
-  }
-
   return (
     <View style={styles.container}>
       <Text category="h6" style={{ textAlign: "center" }}>
@@ -175,25 +166,14 @@ const AddExpenseForm = ({ kumuna, onDone, kumunaStore }) => {
         caption={errors.amount ? errors.amount : ""}
       />
 
-      <Pressable
-        onPress={() => {
-          Keyboard.dismiss();
-          setShowDateTimePicker(true);
-        }}>
-        <View pointerEvents="none">
-          <Input
-            label="Date of purchase"
-            value={values.date.toLocaleDateString()}
-            onFocus={() => setShowDateTimePicker(true)}
-            onBlur={() => setShowDateTimePicker(false)}
-            status={errors.date ? "danger" : "basic"}
-            caption={errors.date ? errors.date : ""}
-            style={styles.input}
-            editable={false}
-            showSoftInputOnFocus={false}
-          />
-        </View>
-      </Pressable>
+      <Datepicker
+        label="Date of purchase"
+        style={styles.input}
+        date={values.date}
+        status={errors.date ? "danger" : "basic"}
+        caption={errors.date || ""}
+        onSelect={handleChange("date")}
+      />
 
       <Button
         style={[styles.input, styles.button]}

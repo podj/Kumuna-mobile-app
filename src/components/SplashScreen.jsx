@@ -1,13 +1,11 @@
 import React from "react";
-import { Layout, Spinner, Text } from "@ui-kitten/components";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View, Image } from "react-native";
 
 const SplashScreen = () => {
   return (
-    <Layout style={styles.container}>
-      <Text style={styles.title}>Kumuna</Text>
-      <Spinner status="basic" />
-    </Layout>
+    <View style={styles.container}>
+      <Image source={require("../../assets/icon.png")} style={styles.logo} />
+    </View>
   );
 };
 
@@ -17,12 +15,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
     alignItems: "center",
+    backgroundColor: "#2a324d",
   },
-  title: {
-    width: "100%",
-    textAlign: "center",
-    fontSize: 50,
-    marginBottom: 10,
+  logo: {
+    height: 256,
+    width: 256,
   },
 });
 

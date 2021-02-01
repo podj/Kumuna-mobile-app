@@ -1,11 +1,19 @@
 import * as axios from "axios";
-import { uploadImage } from "./firebaseService";
+import * as firebaseService from "./firebaseService";
 
 axios.defaults.baseURL =
   "http://kumunaapp-env.eba-p4xm5ys7.us-east-2.elasticbeanstalk.com";
-// axios.defaults.baseURL = "http://localhost:5000";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
+
+axios.interceptors.request.use(async (config) => {
+  if (config.url === "/users" && config.method === "post") {
+    return config;
+  }
+  const token = await firebaseService.getUserToken();
+  config.headers["Authorization"] = `Bearer ${token}`;
+  return config;
+});
 
 export const createUser = async (user) => {
   try {
@@ -31,7 +39,7 @@ export const downloadImage = async (url) => {
 
 export const createKumuna = async (kumuna) => {
   if (kumuna.image && kumuna.image.uri) {
-    const imageUpload = await uploadImage(kumuna.image);
+    const imageUpload = await firebaseService.uploadImage(kumuna.image);
     kumuna.image.uri = await imageUpload.ref.getDownloadURL();
   }
 
@@ -48,8 +56,11 @@ export const createKumuna = async (kumuna) => {
   return response.data;
 };
 
-export const getKumunaExpenses = async (kumunaId) => {
-  const response = await axios.get(`/kumunas/${kumunaId}/loans`);
+export const getKumunaExpenses = async (kumunaId, onlySettleld = false) => {
+  console.log("Get Kumuna Expenses");
+  const params = new URLSearchParams();
+  params.append("onlySettled", onlySettleld);
+  const response = await axios.get(`/kumunas/${kumunaId}/loans`, { params });
 
   if (response.status !== 200) {
     throw new Error(`getKumunaExpenses failed: ${response}`);
@@ -84,15 +95,6 @@ export const getCurrentUser = async () => {
   if (response.status !== 200) {
     console.error("getCurrentUser failed", response);
     throw new Error("Failed to fetch current user");
-  }
-
-  return response.data;
-};
-
-export const getBalanceForKumunaId = async (kumunaId) => {
-  const response = await axios.get(`/kumunas/${kumunaId}/self-summary`);
-  if (response.status !== 200) {
-    throw new Error("Failed to fetch self summary");
   }
 
   return response.data;
@@ -140,4 +142,16 @@ export const addMemberToKumuna = async (kumunaId, emailAddress, role) => {
   } catch (e) {
     throw new Error(e.response.data.message);
   }
+};
+
+export const createSettlementOffer = async (kumunaId) => {
+  const response = await axios.post(`/settlements`, {
+    kumunaId: kumunaId,
+  });
+  return response.data;
+};
+
+export const settle = async (settlementOfferId) => {
+  const reponse = await axios.put(`/settlements/${settlementOfferId}`);
+  return reponse.data;
 };

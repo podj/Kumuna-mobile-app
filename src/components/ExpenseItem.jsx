@@ -8,7 +8,9 @@ import Toast from "react-native-toast-message";
 import { inject, observer } from "mobx-react";
 import { TouchableHighlight } from "react-native-gesture-handler";
 
-const ExpenseItem = function ({ expense, userId, kumunaStore }) {
+const ExpenseItem = function ({ expense, kumunaStore, authStore }) {
+  const { user } = authStore;
+  const userId = user.appUser.id;
   const lightGreen = "#66FF99";
   const lightRed = "#FF6699";
 
@@ -30,6 +32,13 @@ const ExpenseItem = function ({ expense, userId, kumunaStore }) {
   };
 
   const deleteExpense = async () => {
+    if (expense.settled) {
+      await AsyncAlert(
+        "Can't perform action",
+        "Sorry but we can't delete an expense that was already settled"
+      );
+      return;
+    }
     const confirmed = await AsyncAlert(
       "Deleting expense",
       `Deleting an expense is irreversable and will affect users' balances. Are you sure you want to delete ${expense.name}?`,
@@ -96,7 +105,9 @@ const ExpenseItem = function ({ expense, userId, kumunaStore }) {
   );
 };
 
-export default inject("kumunaStore")(observer(ExpenseItem));
+export default inject("kumunaStore")(
+  inject("authStore")(observer(ExpenseItem))
+);
 
 const styles = StyleSheet.create({
   row: {

@@ -8,7 +8,7 @@ class KumunaStore {
   kumunaId = null;
   loadingExpenses = false;
   loadingMembers = false;
-  isLoading = true;
+  isLoading = false;
   userBalance = null;
 
   constructor() {
@@ -23,7 +23,6 @@ class KumunaStore {
       loadExpenses: action.bound,
       loadMembers: action.bound,
       setKumunaId: action.bound,
-      loadUserBalance: action.bound,
       addExpense: action.bound,
       deleteExpense: action.bound,
     });
@@ -42,20 +41,23 @@ class KumunaStore {
     });
   }
 
-  async loadUserBalance() {
-    const userBalance = await backendService.getBalanceForKumunaId(
-      this.kumunaId
-    );
-    runInAction(() => (this.userBalance = userBalance));
+  async refreshExpenses(onlySetteled = false) {
+    runInAction(() => (this.isLoading = true));
+    await this.loadExpenses(onlySetteled);
+    runInAction(() => (this.isLoading = false));
   }
 
-  async loadExpenses() {
+  async loadExpenses(onlySetteled = false) {
     runInAction(() => (this.loadingExpenses = true));
     try {
-      const expenses = await backendService.getKumunaExpenses(this.kumunaId);
-      this.parseExpenses(expenses);
+      const expenses = await backendService.getKumunaExpenses(
+        this.kumunaId,
+        onlySetteled
+      );
+      this.parseExpenses(expenses.expenses);
       runInAction(() => {
-        this.expenses = expenses;
+        this.expenses = expenses.expenses;
+        this.userBalance = expenses.currentUserBalance;
       });
     } catch (e) {
       Toast.show({
@@ -63,7 +65,10 @@ class KumunaStore {
         text2: "Huston, we have a problem",
         type: "error",
       });
-      runInAction(() => (this.expenses = []));
+      runInAction(() => {
+        this.expenses = [];
+        this.userBalance = null;
+      });
     } finally {
       runInAction(() => (this.loadingExpenses = false));
     }
@@ -90,8 +95,6 @@ class KumunaStore {
     });
     await this.loadMembers();
     await this.loadExpenses();
-    await this.loadUserBalance();
-
     runInAction(() => (this.isLoading = false));
   }
 
@@ -101,7 +104,6 @@ class KumunaStore {
     });
     await backendService.createExpense(expense);
     await this.loadExpenses();
-    await this.loadUserBalance();
     runInAction(() => (this.isLoading = false));
   }
 
@@ -112,7 +114,6 @@ class KumunaStore {
 
     await backendService.deleteExpense(expense);
     await this.loadExpenses();
-    await this.loadUserBalance();
 
     runInAction(() => {
       this.isLoading = false;

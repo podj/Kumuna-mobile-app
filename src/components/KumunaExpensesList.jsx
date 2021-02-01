@@ -1,24 +1,33 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { StyleSheet } from "react-native";
-import { Layout, Text, List, Spinner } from "@ui-kitten/components";
+import { Layout, Text, List, Spinner, Button } from "@ui-kitten/components";
 import ExpenseItem from "./ExpenseItem";
 import { inject, observer } from "mobx-react";
 
-const listPlaceholder = (
-  <Layout>
-    <Text style={{ textAlign: "center" }} category="h5">
-      Nothing to show yet 🐣
-    </Text>
-    <Text style={{ textAlign: "center" }} category="h6">
-      Pull to refresh
-    </Text>
-  </Layout>
-);
 
 const KumunaExpensesList = (props) => {
-  const { authStore, kumunaStore } = props;
-  const { user } = authStore;
+  const { kumunaStore } = props;
   const { isLoading, expenses } = kumunaStore;
+
+  const listPlaceholder = (
+    <Layout
+      style={{
+        alignItems: "center",
+        flexGrow: 1,
+        height: "100%",
+      }}>
+      <Text category="h5">Nothing to see yet 🐣</Text>
+      <Text category="h6">Pull to refresh</Text>
+      <Button
+        status="basic"
+        appearance="ghost"
+        size="giant"
+        onPress={() => kumunaStore.refreshExpenses(true)}
+        style={{ marginTop: 20 }}>
+        see settled expenses
+      </Button>
+    </Layout>
+  );
 
   if (isLoading) {
     return (
@@ -40,9 +49,7 @@ const KumunaExpensesList = (props) => {
       ListEmptyComponent={listPlaceholder}
       showsVerticalScrollIndicator={false}
       data={expenses}
-      renderItem={(expense) => (
-        <ExpenseItem expense={expense.item} userId={user.appUser.id} />
-      )}
+      renderItem={(expense) => <ExpenseItem expense={expense.item} />}
       onScroll={props.onScroll}
       style={styles.expenses}
     />
@@ -57,6 +64,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default inject("authStore")(
-  inject("kumunaStore")(observer(KumunaExpensesList))
-);
+export default inject("kumunaStore")(observer(KumunaExpensesList));

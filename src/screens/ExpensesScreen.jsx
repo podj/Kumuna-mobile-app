@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { FloatingAction } from "react-native-floating-action";
 import KumunaExpensesList from "../components/KumunaExpensesList";
 import AddExpenseForm from "../components/AddExpenseForm";
-import { Layout, Spinner, Text, useTheme } from "@ui-kitten/components";
+import { Layout, Modal, Spinner, Text, useTheme } from "@ui-kitten/components";
 import * as backendService from "../services/backendService";
 import { inject, observer } from "mobx-react";
 import {
@@ -18,6 +18,7 @@ import Toast from "react-native-toast-message";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { Modalize } from "react-native-modalize";
 import SuccessModal from "../components/SuccessModal";
+import SettlementForm from "../components/SettlementForm";
 
 const actions = [
   {
@@ -75,6 +76,7 @@ const ExpensesScreen = ({ kumunaStore }) => {
   const [selectedKumunaIndex, setSelectedKumunaIndex] = useState(0);
   const bottomModal = useRef(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSettlementForm, setShowSettlementForm] = useState(false);
 
   const getKumunasTabs = () => {
     if (kumunas.length === 0) {
@@ -112,7 +114,11 @@ const ExpensesScreen = ({ kumunaStore }) => {
       const rawKumunas = await backendService.getKumunas();
       return await Promise.all(rawKumunas.map(populateKumunaThumbnail));
     } catch (e) {
-      Toast.show({ text1: "Oops", text2: "Someone will be fired" });
+      Toast.show({
+        text1: "Oops",
+        text2: "Someone will be fired",
+        type: "error",
+      });
     }
   };
 
@@ -121,7 +127,18 @@ const ExpensesScreen = ({ kumunaStore }) => {
     if (kumunas === null) {
       return;
     }
-    setKumunaId(kumunas[selectedKumunaIndex].id);
+
+    if (kumunas.length > 0) {
+      setKumunaId(kumunas[selectedKumunaIndex].id);
+    } else {
+      loadKumunas().then((kumunas) => {
+        if (kumunas.length > 0) {
+          setKumunas(kumunas);
+          setKumunaId(kumunas[selectedKumunaIndex].id);
+        }
+      });
+    }
+
     setFirstLoading(false);
   };
 
@@ -148,15 +165,27 @@ const ExpensesScreen = ({ kumunaStore }) => {
       extrapolate: "clamp",
     });
 
-    let userBalanceText = <Spinner size="tiny" status="basic" />;
+    let userBalanceText = (
+      <>
+        <Text style={styles.headerTitle}>Your balance:</Text>
+        <Spinner size="tiny" status="basic" />
+      </>
+    );
     if (!isLoading) {
-      userBalanceText = (
-        <Text
-          style={{ fontSize: 20 }}
-          status={
-            userBalance < 0 ? "danger" : "success"
-          }>{`${userBalance.toLocaleString("en")}₪`}</Text>
-      );
+      if (userBalance === null) {
+        userBalanceText = <></>;
+      } else {
+        userBalanceText = (
+          <>
+            <Text style={styles.headerTitle}>Your balance:</Text>
+            <Text
+              style={{ fontSize: 20 }}
+              status={
+                userBalance < 0 ? "danger" : "success"
+              }>{`${userBalance.toLocaleString("en")}₪`}</Text>
+          </>
+        );
+      }
     }
 
     return (
@@ -167,7 +196,6 @@ const ExpensesScreen = ({ kumunaStore }) => {
               flexDirection: "row",
               alignItems: "center",
             }}>
-            <Text style={styles.headerTitle}>Your balance:</Text>
             {userBalanceText}
           </View>
         </Animated.View>
@@ -186,7 +214,7 @@ const ExpensesScreen = ({ kumunaStore }) => {
     let userBalanceText = <></>;
     if (isLoading) {
       userBalanceText = <Spinner size="tiny" status="basic" />;
-    } else if (kumuna.title !== null) {
+    } else if (!!kumuna && userBalance !== null) {
       userBalanceText = (
         <>
           <Text style={styles.message} appearance="hint">
@@ -279,32 +307,52 @@ const ExpensesScreen = ({ kumunaStore }) => {
           { useNativeDriver: false }
         )}
       />
-      {!isLoading && (
-        <FloatingAction
-          actions={actions}
-          onPressItem={() => bottomModal.current.open()}
-          color="#4dabf5"
-          overlayColor="transparent"
-          floatingIcon={require("../../assets/more.png")}
-        />
-      )}
-      <Modalize
-        ref={bottomModal}
-        modalTopOffset={200}
-        scrollViewProps={{ showsVerticalScrollIndicator: false }}
-        modalStyle={{
-          backgroundColor: theme["background-basic-color-1"],
-          marginHorizontal: 0,
-          paddingTop: 10,
-          paddingHorizontal: 20,
-        }}>
-        <AddExpenseForm
-          kumuna={kumunas[selectedKumunaIndex]}
-          onDone={expenseWasAdded}
-        />
-      </Modalize>
-      {showSuccessModal && (
-        <SuccessModal onAnimationDone={() => setShowSuccessModal(false)} />
+      {!isLoading && kumunas !== null && kumunas.length > 0 && (
+        <>
+          <FloatingAction
+            actions={actions}
+            onPressItem={(actionName) => {
+              if (actionName === "btn_add_expense") {
+                bottomModal.current.open();
+              } else if (actionName === "btn_settle") {
+                setShowSettlementForm(true);
+              } else {
+                Toast.show({
+                  text1: "Oops",
+                  text2: "Our bad. This action is not supported yet",
+                  type: "error",
+                });
+              }
+            }}
+            color="#4dabf5"
+            overlayColor="transparent"
+            floatingIcon={require("../../assets/more.png")}
+          />
+          <Modalize
+            ref={bottomModal}
+            modalTopOffset={200}
+            scrollViewProps={{ showsVerticalScrollIndicator: false }}
+            modalStyle={{
+              backgroundColor: theme["background-basic-color-1"],
+              marginHorizontal: 0,
+              paddingTop: 10,
+              paddingHorizontal: 20,
+            }}>
+            <AddExpenseForm
+              kumuna={kumunas[selectedKumunaIndex]}
+              onDone={expenseWasAdded}
+            />
+          </Modalize>
+          {showSuccessModal && (
+            <SuccessModal onAnimationDone={() => setShowSuccessModal(false)} />
+          )}
+
+          <SettlementForm
+            kumunaId={kumunas[selectedKumunaIndex].id}
+            visible={showSettlementForm}
+            onDone={() => setShowSettlementForm(false)}
+          />
+        </>
       )}
     </Layout>
   );

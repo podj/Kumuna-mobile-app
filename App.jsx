@@ -1,4 +1,4 @@
-import { I18nManager, AppState } from "react-native";
+import { I18nManager } from "react-native";
 
 I18nManager.forceRTL(false);
 I18nManager.allowRTL(false);
@@ -23,18 +23,7 @@ import { Provider } from "mobx-react";
 import authStore from "./src/stores/AuthStore";
 import * as Sentry from "sentry-expo";
 import kumunaStore from "./src/stores/KumunaStore";
-
-const REFRESH_AUTH_TOKEN_INTERVAL_IN_MILISECONDS = 3300000; // 55 minutes
-
-function refreshAuthToken(appState) {
-  if (appState !== "active") {
-    return;
-  }
-
-  firebaseService.getUserToken().then((token) => {
-    axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-  });
-}
+import SplashScreen from "./src/components/SplashScreen";
 
 Sentry.init({
   dsn:
@@ -53,6 +42,7 @@ const App = () => {
   });
 
   const handleAuthStateChange = (user) => {
+    console.log(`User is connected: ${!!user}`);
     if (!user) {
       axios.defaults.headers.common["Authorization"] = undefined;
       authStore.setUser(null);
@@ -72,34 +62,28 @@ const App = () => {
     const unsbscribe = firebaseService.onAuthStateChanged(
       handleAuthStateChange
     );
-    
-    const refreshTokenInterval = setInterval(() => {
-      refreshAuthToken(AppState.currentState);
-    }, REFRESH_AUTH_TOKEN_INTERVAL_IN_MILISECONDS);
-
-    AppState.addEventListener("change", refreshAuthToken);
 
     return () => {
       unsbscribe();
-      clearInterval(refreshTokenInterval);
-      AppState.removeEventListener("change", refreshAuthToken);
     };
   }, []);
 
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    console.log("Displaying splash screen");
+    return <SplashScreen />;
   } else {
+    console.log("Displaying app");
     return (
       <>
         <IconRegistry icons={EvaIconsPack} />
-        <ApplicationProvider
-          {...eva}
-          theme={{ ...eva.dark }}
-          customMapping={mapping}>
-          <Provider authStore={authStore} kumunaStore={kumunaStore}>
+        <Provider authStore={authStore} kumunaStore={kumunaStore}>
+          <ApplicationProvider
+            {...eva}
+            theme={{ ...eva.dark }}
+            customMapping={mapping}>
             <AppNavigator />
-          </Provider>
-        </ApplicationProvider>
+          </ApplicationProvider>
+        </Provider>
         <Toast topOffset={50} ref={(ref) => Toast.setRef(ref)} />
       </>
     );

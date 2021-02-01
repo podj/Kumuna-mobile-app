@@ -1,4 +1,11 @@
-import { action, computed, observable, makeObservable } from "mobx";
+import {
+  action,
+  computed,
+  observable,
+  makeObservable,
+  runInAction,
+} from "mobx";
+import * as Updates from "expo-updates";
 
 class AuthStore {
   user = null;
@@ -13,9 +20,22 @@ class AuthStore {
     });
   }
 
-  setUser = (user) => {
-    this.user = user;
-    this.isLoading = false;
+  setUser = async (user) => {
+    runInAction(() => {
+      this.user = user;
+    });
+    try {
+      const { isAvailable } = await Updates.checkForUpdateAsync();
+      if (isAvailable) {
+        console.log("There is an update");
+        await Updates.fetchUpdateAsync();
+        Updates.reloadAsync();
+      }
+    } catch (e) {
+      console.log(e);
+      console.log("Got an error when trying to update app");
+    }
+    runInAction(() => ((this.isLoading = false)));
   };
 
   get isLoggedIn() {
