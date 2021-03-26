@@ -57,7 +57,6 @@ export const createKumuna = async (kumuna) => {
 };
 
 export const getKumunaExpenses = async (kumunaId, onlySettleld = false) => {
-  console.log("Get Kumuna Expenses");
   const params = new URLSearchParams();
   params.append("onlySettled", onlySettleld);
   const response = await axios.get(`/kumunas/${kumunaId}/loans`, { params });

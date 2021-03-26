@@ -27,12 +27,10 @@ class AuthStore {
     try {
       const { isAvailable } = await Updates.checkForUpdateAsync();
       if (isAvailable) {
-        console.log("There is an update");
         await Updates.fetchUpdateAsync();
         Updates.reloadAsync();
       }
     } catch (e) {
-      console.log(e);
       console.log("Got an error when trying to update app");
     }
     runInAction(() => ((this.isLoading = false)));

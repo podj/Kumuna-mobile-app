@@ -122,6 +122,7 @@ const AddExpenseForm = ({ kumuna, onDone, kumunaStore }) => {
         Add expense to {kumuna.name}
       </Text>
       <Input
+        size="large"
         label="Name"
         returnKeyType="done"
         value={values.name}
@@ -133,6 +134,7 @@ const AddExpenseForm = ({ kumuna, onDone, kumunaStore }) => {
 
       <Selector
         label="Who paid"
+        size="large"
         data={Object.values(members)}
         value={values.creditor}
         toString={(val) => (val ? val.displayName : "")}
@@ -145,6 +147,7 @@ const AddExpenseForm = ({ kumuna, onDone, kumunaStore }) => {
 
       <Selector
         label="Splits between"
+        size="large"
         data={Object.values(members)}
         onValueChange={handleChange("debtors")}
         value={values.debtors}
@@ -157,6 +160,7 @@ const AddExpenseForm = ({ kumuna, onDone, kumunaStore }) => {
 
       <Input
         label="Amount"
+        size="large"
         returnKeyType="done"
         keyboardType="number-pad"
         value={values.amount}
@@ -167,6 +171,7 @@ const AddExpenseForm = ({ kumuna, onDone, kumunaStore }) => {
       />
 
       <Datepicker
+        size="large"
         label="Date of purchase"
         style={styles.input}
         date={values.date}

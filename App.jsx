@@ -42,7 +42,6 @@ const App = () => {
   });
 
   const handleAuthStateChange = (user) => {
-    console.log(`User is connected: ${!!user}`);
     if (!user) {
       axios.defaults.headers.common["Authorization"] = undefined;
       authStore.setUser(null);
@@ -69,10 +68,8 @@ const App = () => {
   }, []);
 
   if (!fontsLoaded) {
-    console.log("Displaying splash screen");
     return <SplashScreen />;
   } else {
-    console.log("Displaying app");
     return (
       <>
         <IconRegistry icons={EvaIconsPack} />

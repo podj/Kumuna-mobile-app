@@ -75,6 +75,7 @@ const Selector = (props) => {
         }
         status={props.status}
         caption={props.caption}
+        size={props.size || "medium"}
       />
       <Modal animationType="fade" visible={showList} transparent={true}>
         <Pressable
