@@ -108,8 +108,9 @@ const AddExpenseForm = ({ kumuna, onDone, kumunaStore }) => {
 
     createExpense(values, kumuna.id)
       .then(() => {
-        await registerForPushNotifications();
-        onDone();
+        registerForPushNotifications().then(() => {
+          onDone();
+        });
       })
       .catch(() => {
         Toast.show({ text1: "Damn!", text2: "We messed up", type: "error" });
