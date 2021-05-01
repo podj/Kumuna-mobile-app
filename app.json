@@ -20,7 +20,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "app.kumuna",
-      "buildNumber": "0.0.2"
+      "buildNumber": "0.0.3"
     },
     "web": {
       "favicon": "./assets/favicon.png"
