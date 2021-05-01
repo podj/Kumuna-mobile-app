@@ -1,8 +1,8 @@
 import * as axios from "axios";
 import * as firebaseService from "./firebaseService";
 
-axios.defaults.baseURL = "http://localhost:5000"
-//  "http://kumunaapp-env.eba-p4xm5ys7.us-east-2.elasticbeanstalk.com";
+axios.defaults.baseURL =
+  "http://kumunaapp-env.eba-p4xm5ys7.us-east-2.elasticbeanstalk.com";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 
@@ -153,4 +153,9 @@ export const createSettlementOffer = async (kumunaId) => {
 export const settle = async (settlementOfferId) => {
   const reponse = await axios.put(`/settlements/${settlementOfferId}`);
   return reponse.data;
+};
+
+export const getPreSignedS3UrlForUploadImage = async () => {
+  const response = await axios.get("/me/assets-pre-signed-link/UPLOAD_IMAGE");
+  return response.data;
 };

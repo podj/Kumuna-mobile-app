@@ -1,9 +1,4 @@
-import {
-  Layout,
-  List,
-  ListItem,
-  Text,
-} from "@ui-kitten/components";
+import { Layout, List, ListItem, Text } from "@ui-kitten/components";
 import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
@@ -38,7 +33,7 @@ export default function ({ navigation }) {
   const [isLoading, setLoading] = useState(false);
 
   const openKumunaDashboard = (kumuna) => {
-    navigation.push("KumunaDashboardScreen", {kumuna: kumuna});
+    navigation.push("KumunaDashboardScreen", { kumuna: kumuna });
   };
 
   const renderKumuna = ({ item }) => (
@@ -46,7 +41,6 @@ export default function ({ navigation }) {
       <KumunaCard kumuna={item} />
     </ListItem>
   );
-
 
   const loadKumunas = async () => {
     setLoading(true);
