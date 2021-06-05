@@ -11,12 +11,27 @@ import {
   Spinner,
 } from "@ui-kitten/components";
 import * as backendService from "../services/backendService";
+import * as fileSystemService from "../services/fileSystemService";
 import FloatButton from "../components/FloatButton";
 import { StyleSheet } from "react-native";
 import KumunaCard from "../components/KumunaCard";
 import { getShortMonthName } from "../utils/DateUtils";
 import * as yup from "yup";
 import Toast from "react-native-toast-message";
+import { FloatingAction } from "react-native-floating-action";
+
+const ACTIONS = [
+  {
+    text: "Change image",
+    icon: require("../../assets/image.png"),
+    name: "change_image",
+    position: 1,
+    color: "#4dabf5",
+    textBackground: "transparent",
+    textColor: "#ffffff",
+  },
+];
+
 
 export default function ({ route, navigation }) {
   const [newMemberEmail, setNewMemberEmail] = useState("");
@@ -96,6 +111,20 @@ export default function ({ route, navigation }) {
     }
   };
 
+  const changeImage = async () => {
+    const imageAsBlob = await fileSystemService.pickJpegImageAsBlob();
+    if (imageAsBlob === null) {
+      return;
+    }
+
+    const imagePath = await backendService.uploadKumunaImage(
+      kumuna.name,
+      imageAsBlob
+    );
+
+    backendService.updateKumuna(kumuna, imagePath);
+  };
+
   return (
     <Layout style={styles.container}>
       <Layout style={styles.header}>
@@ -146,6 +175,23 @@ export default function ({ route, navigation }) {
         bottom={false}
         right={false}
         icon="arrow-back-outline"
+      />
+      <FloatingAction
+        actions={ACTIONS}
+        onPressItem={(actionName) => {
+          if (actionName === "change_image") {
+            changeImage();
+          } else {
+            Toast.show({
+              text1: "Oops",
+              text2: "Our bad. This action is not supported yet",
+              type: "error",
+            });
+          }
+        }}
+        color="#4dabf5"
+        overlayColor="transparent"
+        floatingIcon={require("../../assets/more.png")}
       />
     </Layout>
   );

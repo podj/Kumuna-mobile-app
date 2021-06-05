@@ -52,16 +52,6 @@ const nothingToShowYet = (
   </Layout>
 );
 
-const populateKumunaThumbnail = async (kumuna) => {
-  if (kumuna.thumbnailUrl) {
-    let thumbnailBase64 = await backendService.downloadImage(
-      kumuna.thumbnailUrl
-    );
-    kumuna.thumbnailUrl = `data:image/jpeg;base64,${thumbnailBase64}`;
-  }
-  return kumuna;
-};
-
 const ExpensesScreen = ({ kumunaStore }) => {
   const { setKumunaId, isLoading, userBalance } = kumunaStore;
   const [kumunas, setKumunas] = useState(null);
@@ -111,8 +101,7 @@ const ExpensesScreen = ({ kumunaStore }) => {
 
   const loadKumunas = async () => {
     try {
-      const rawKumunas = await backendService.getKumunas();
-      return await Promise.all(rawKumunas.map(populateKumunaThumbnail));
+      return await backendService.getKumunas();
     } catch (e) {
       Toast.show({
         text1: "Oops",

@@ -11,7 +11,6 @@ import axios from "axios";
 
 import * as eva from "@eva-design/eva";
 import * as Font from "expo-font";
-import { Text } from "react-native-svg";
 import Toast from "react-native-toast-message";
 
 import { default as mapping } from "./src/mapping.json";

@@ -1,18 +1,19 @@
 import { Button, Input, Layout, Spinner } from "@ui-kitten/components";
-import * as ImagePicker from "expo-image-picker";
+
 import React, { useState } from "react";
 import { Alert, StyleSheet } from "react-native";
 import ScreenLayout from "../components/ScreenLayout";
-import AsyncAlert from "../utils/AsyncAlert";
 import * as backendService from "../services/backendService";
 import * as yup from "yup";
 import Toast from "react-native-toast-message";
+
+import * as fileSystemService from "../services/fileSystemService";
 
 export default function ({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [nameErrors, setNameError] = useState(null);
-  const [image, setImage] = useState({});
+  const [image, setImage] = useState({ blob: null });
 
   const submitKumunaCreationForm = async () => {
     setNameError(null);
@@ -24,10 +25,12 @@ export default function ({ navigation }) {
     }
 
     setLoading(true);
+
     await backendService.createKumuna({
       name: name,
-      image: image,
+      image: image.blob,
     });
+
     setLoading(false);
     Toast.show({
       type: "success",
@@ -38,40 +41,10 @@ export default function ({ navigation }) {
   };
 
   const pickImage = async () => {
-    const cameraRollPermissions = await ImagePicker.getMediaLibraryPermissionsAsync();
-    if (cameraRollPermissions.accessPrivileges === "none") {
-      if (!cameraRollPermissions.canAskAgain) {
-        Alert.alert(
-          "Permissions needed",
-          "You need to grant us permissions to your camera roll through the settings in your device"
-        );
-        return;
-      }
-      await AsyncAlert(
-        "Camera roll permission",
-        "We are about to ask for permissions to your camera roll so you can choose a picture for your Kumuna's proifle"
-      );
-      const {
-        status,
-      } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status === "denied") {
-        Alert.alert(
-          "No worry",
-          "Your Kumuna will get the default picture. You can grant us permissions to your camera roll through the settings of you phone"
-        );
-        return;
-      }
-    }
+    const imageAsBlob = await fileSystemService.pickJpegImageAsBlob();
 
-    let image = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.3,
-      base64: true,
-      exif: true,
-    });
-    if (!image.cancelled) {
-      setImage({ uri: image.uri, base64: image.base64 });
+    if (imageAsBlob) {
+      setImage({ blob: imageAsBlob });
     }
   };
 
@@ -89,7 +62,7 @@ export default function ({ navigation }) {
           style={{ alignSelf: "flex-start", marginTop: 20 }}
           onPress={pickImage}
           status="basic">
-          {Boolean(image.uri) ? "Change image" : "Choose image"}
+          {Boolean(image.blob) ? "Change image" : "Choose image"}
         </Button>
         <Button style={styles.submitButton} onPress={submitKumunaCreationForm}>
           {loading ? <Spinner status="basic" size="small" /> : "Create Kumuna"}

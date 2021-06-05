@@ -54,11 +54,3 @@ export const getUserToken = () => {
   }
   return user.getIdToken();
 };
-
-export const uploadImage = async (image) => {
-  let imageRef = firebase
-    .storage()
-    .ref()
-    .child(`kumunas/thumbnails/${new Date()}`);
-  return imageRef.putString(image.base64);
-};

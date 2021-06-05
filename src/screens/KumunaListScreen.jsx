@@ -7,15 +7,6 @@ import * as backendService from "../services/backendService";
 import FloatButton from "../components/FloatButton";
 import KumunaCard from "../components/KumunaCard";
 
-const populateKumunaThumbnail = async (kumuna) => {
-  if (kumuna.thumbnailUrl) {
-    let thumbnailBase64 = await backendService.downloadImage(
-      kumuna.thumbnailUrl
-    );
-    kumuna.thumbnailUrl = `data:image/jpeg;base64,${thumbnailBase64}`;
-  }
-  return kumuna;
-};
 
 const listPlaceholder = (
   <Layout>
@@ -37,7 +28,10 @@ export default function ({ navigation }) {
   };
 
   const renderKumuna = ({ item }) => (
-    <ListItem style={styles.card} onPress={() => openKumunaDashboard(item)}>
+    <ListItem
+      style={styles.card}
+      key={item.id}
+      onPress={() => openKumunaDashboard(item)}>
       <KumunaCard kumuna={item} />
     </ListItem>
   );
@@ -46,10 +40,7 @@ export default function ({ navigation }) {
     setLoading(true);
     backendService
       .getKumunas()
-      .then(async (data) => {
-        let kumunas = await Promise.all(data.map(populateKumunaThumbnail));
-        setKumunas(kumunas);
-      })
+      .then(setKumunas)
       .catch((e) => {
         Toast.show({
           text1: "Oops",

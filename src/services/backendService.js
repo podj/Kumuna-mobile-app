@@ -1,8 +1,8 @@
 import * as axios from "axios";
 import * as firebaseService from "./firebaseService";
 
-axios.defaults.baseURL =
-  "http://kumunaapp-env.eba-p4xm5ys7.us-east-2.elasticbeanstalk.com";
+axios.defaults.baseURL = "http://localhost:5000";
+// "http://kumunaapp-env.eba-p4xm5ys7.us-east-2.elasticbeanstalk.com";
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 
@@ -28,24 +28,15 @@ export const createUser = async (user) => {
   }
 };
 
-export const downloadImage = async (url) => {
-  const response = await axios.get(url);
-  if (response.status !== 200) {
-    throw new Error(`Failed to download image: ${response}`);
-  }
-
-  return response.data;
-};
-
 export const createKumuna = async (kumuna) => {
-  if (kumuna.image && kumuna.image.uri) {
-    const imageUpload = await firebaseService.uploadImage(kumuna.image);
-    kumuna.image.uri = await imageUpload.ref.getDownloadURL();
+  let imagePath = null;
+  if (kumuna.image) {
+    imagePath = await uploadKumunaImage(kumuna.name, kumuna.image);
   }
 
   const response = await axios.post("/kumunas", {
     name: kumuna.name,
-    thumbnailUrl: kumuna.image.uri,
+    imagePath: imagePath,
   });
 
   if (response.status !== 201) {
@@ -155,7 +146,31 @@ export const settle = async (settlementOfferId) => {
   return reponse.data;
 };
 
-export const getPreSignedS3UrlForUploadImage = async () => {
-  const response = await axios.get("/me/assets-pre-signed-link/UPLOAD_IMAGE");
+export const getPreSignedS3UrlForUploadImage = async (kumunaName) => {
+  const response = await axios.get("/users/me/pre-signed-url", {
+    params: { kumunaName },
+  });
+  return response.data;
+};
+
+export const uploadKumunaImage = async (kumunaName, imageAsBlob) => {
+  const presignedS3Url = await getPreSignedS3UrlForUploadImage(kumunaName);
+  await fetch(presignedS3Url.url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "image/jpeg",
+    },
+    body: imageAsBlob,
+  });
+
+  return presignedS3Url.imagePath;
+};
+
+export const updateKumuna = async (kumuna, imagePath) => {
+  const response = await axios.put(`/kumunas/${kumuna.id}`, {
+    name: kumuna.name,
+    imagePath: imagePath,
+  });
+
   return response.data;
 };
