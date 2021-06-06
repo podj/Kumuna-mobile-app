@@ -1,9 +1,10 @@
 import * as ImagePicker from "expo-image-picker";
 import AsyncAlert from "../utils/AsyncAlert";
 import * as ImageManipulator from "expo-image-manipulator";
+import Base64 from "../utils/Base64";
 
 const b64toBlob = (b64Data) => {
-  const binary_string = window.atob(b64Data);
+  const binary_string = Base64.atob(b64Data);
   const len = binary_string.length;
   const bytes = new Uint8Array(len);
   for (var i = 0; i < len; i++) {

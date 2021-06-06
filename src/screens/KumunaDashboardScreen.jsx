@@ -32,7 +32,6 @@ const ACTIONS = [
   },
 ];
 
-
 export default function ({ route, navigation }) {
   const [newMemberEmail, setNewMemberEmail] = useState("");
   const [isLoadingMemberships, setLoadingMemberships] = useState(true);
@@ -117,12 +116,30 @@ export default function ({ route, navigation }) {
       return;
     }
 
-    const imagePath = await backendService.uploadKumunaImage(
-      kumuna.name,
-      imageAsBlob
-    );
+    Toast.show({
+      text1: "Updating Kumuna",
+      text2: "Only a few seconds left!",
+      type: "info",
+    });
 
-    backendService.updateKumuna(kumuna, imagePath);
+    try {
+      const imagePath = await backendService.uploadKumunaImage(
+        kumuna.name,
+        imageAsBlob
+      );
+
+      await backendService.updateKumuna(kumuna, imagePath);
+      Toast.show({
+        text1: "Got it 😄",
+        text2: "Kumuna has been updated",
+      });
+    } catch (e) {
+      Toast.show({
+        text1: "Oops",
+        text2: e.message || "Something went wrong",
+        type: "error",
+      });
+    }
   };
 
   return (
